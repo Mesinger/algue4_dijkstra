@@ -64,23 +64,24 @@ int main(int argc, char** argv) {
 
 	input.close();
 
-	adjacency_list_t adjacency_list(1);//Netz mit 1 Station Initialisieren
-
     if(linestations.size() != linedistances.size()){
         std::cerr << "Invalid file" << std::endl;
         return EXIT_FAILURE;
     }
 
+	adjacency_list_t adjacency_list;
+	adjacency_list.reserve(linestations.size());
+
     for(int i = 0; i < linestations.size(); i++){
 
-        std::cout << linestations[i].size() << linedistances[i].size();
+        //std::cout << linestations[i].size() << linedistances[i].size();
 
         if(linestations[i].size() != linedistances[i].size() + 1){
             std::cerr << "Invalid file" << std::endl;
             return EXIT_FAILURE;
         }
 
-        adjacency_list[i].reserve(linestations[i].size());
+		adjacency_list.emplace_back();
 
         //first station
         adjacency_list[i].emplace_back(linestations[i][0], 0, linedistances[i].front());
@@ -98,6 +99,9 @@ int main(int argc, char** argv) {
         for(Node station : line)
             station.displayInfo();
     }
+
+	std::cin.ignore();
+	std::cin.get();
 
 //	string St;
 //	int E;
