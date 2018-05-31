@@ -1,59 +1,21 @@
-
 #include <iostream>
-#include <string>
-#include <unordered_set>
-#include <map>
 #include <fstream>
 #include <vector>
 #include <sstream>
+#include "Node.h"
+
+template<typename Out>
+void split(const std::string &s, char delim, Out result);
+
+std::vector<std::string> split(const std::string &s, char delim);
 
 using namespace std;
 
-class Nodes {
-private:
-	string Stationsname;
-	int Entfernung;
-	vector <string> Nebenstation;
-public:
-	Nodes(string StName,int Entf) {
-		Stationsname = StName;
-		Entfernung = Entf;
-	}
-	~Nodes() {
-	}
-	string getStName() const
-	{
-		return this->Stationsname;
-	}
-	int getEntfernung() const
-	{
-		return this->Entfernung;
-	}
-	bool isLonely()
-	{
-		if (Nebenstation.size() == 0)
-			return true;
-		return false;
-	}
-	vector<string> getNeben() {
-		return Nebenstation;
-	}
-	void displayInfo()
-	{
-		cout << " :: " << this->Stationsname << " :: " << this->Entfernung << endl;
-	}
-};
-
-
-typedef std::vector<std::vector<Nodes> > adjacency_list_t;
-
+typedef std::vector<std::vector<Node>> adjacency_list_t;
 
 int main(int argc, char** argv) {
-	adjacency_list_t adjacency_list(1);//Netz mit 1 Station Initialisieren
-	vector<Nodes> vec;
 	
 	/*command line arguments*/
-	/*
 	if (argc != 2) {
 		std::cerr << "Invalid arguments" << std::endl;
 		return EXIT_FAILURE;
@@ -66,39 +28,111 @@ int main(int argc, char** argv) {
 		return EXIT_FAILURE;
 	}
 
-	std::string line, sbuf;
-	std::vector<std::vector<std::string>> lines;
-	std::vector<std::string> stations_distances;
+	std::string sbuf;
+	std::vector<std::vector<std::string>> linestations;
+    std::vector<std::vector<int>> linedistances;
 
-	while (getline(input, line)) {
+    while(getline(input, sbuf)){
 
-		std::stringstream ss(line);
+        std::vector<int> distances;
+        std::vector<std::string> stations;
 
-		while (ss >> sbuf)
-			stations_distances.emplace_back(sbuf);
+        std::string linenumber;
 
-		lines.emplace_back(stations_distances);
-	}*/
+        linenumber = sbuf.substr(0, sbuf.find(':'));
+        sbuf = sbuf.substr(sbuf.find(':') + 3);
 
-	string St;
-	int E;
-	St = "Schwedenplatz:U1";
-	E = 5;
-	adjacency_list[0].push_back(Nodes(St, E));
-	St = "Stephansplatz:U1";
-	E = 2;
-	adjacency_list[0].push_back(Nodes(St, E));
-	St = "Karlsplatz:U1";
-	E = 3;
-	adjacency_list[0].push_back(Nodes(St, E));
+        std::vector<std::string> line = split(sbuf, '"');
 
-	adjacency_list.push_back(vec);	//Neue Station hinzufügen
-	adjacency_list[1].push_back(adjacency_list[0][1]);
-		
-	adjacency_list[0][0].displayInfo();
-	adjacency_list[0][1].displayInfo();
-	adjacency_list[0][2].displayInfo();
-	adjacency_list[1][0].displayInfo();
-	//return EXIT_SUCCESS;
-	return 0;
+        for(int i = 0; i < line.size(); i++){
+
+            try{
+
+                //distance
+                distances.emplace_back(stoi(line[i]));
+
+            }catch (const std::invalid_argument& e){
+
+                //station
+                stations.emplace_back(line[i] + ":" + linenumber);
+            }
+        }
+
+        linestations.emplace_back(stations);
+        linedistances.emplace_back(distances);
+    }
+
+	input.close();
+
+	adjacency_list_t adjacency_list(1);//Netz mit 1 Station Initialisieren
+
+    if(linestations.size() != linedistances.size()){
+        std::cerr << "Invalid file" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    for(int i = 0; i < linestations.size(); i++){
+
+        std::cout << linestations[i].size() << linedistances[i].size();
+
+        if(linestations[i].size() != linedistances[i].size() + 1){
+            std::cerr << "Invalid file" << std::endl;
+            return EXIT_FAILURE;
+        }
+
+        adjacency_list[i].reserve(linestations[i].size());
+
+        //first station
+        adjacency_list[i].emplace_back(linestations[i][0], 0, linedistances[i].front());
+
+        for(int j = 1; j < linestations[i].size() - 1; j++){
+
+            adjacency_list[i].emplace_back(linestations[i][j], linedistances[i][j - 1], linedistances[i][j]);
+        }
+
+        //last station
+        adjacency_list[i].emplace_back(linestations[i][0], linedistances[i].back(), 0);
+    }
+
+    for(std::vector<Node> line : adjacency_list){
+        for(Node station : line)
+            station.displayInfo();
+    }
+
+//	string St;
+//	int E;
+//	St = "Schwedenplatz:U1";
+//	E = 5;
+//	adjacency_list[0].push_back(Nodes(St, E));
+//	St = "Stephansplatz:U1";
+//	E = 2;
+//	adjacency_list[0].push_back(Nodes(St, E));
+//	St = "Karlsplatz:U1";
+//	E = 3;
+//	adjacency_list[0].push_back(Nodes(St, E));
+//
+//	adjacency_list.push_back(vec);	//Neue Station hinzufï¿½gen
+//	adjacency_list[1].push_back(adjacency_list[0][1]);
+//
+//	adjacency_list[0][0].displayInfo();
+//	adjacency_list[0][1].displayInfo();
+//	adjacency_list[0][2].displayInfo();
+//	adjacency_list[1][0].displayInfo();
+
+    return EXIT_SUCCESS;
+}
+
+template<typename Out>
+void split(const std::string &s, char delim, Out result) {
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        *(result++) = item;
+    }
+}
+
+std::vector<std::string> split(const std::string &s, char delim) {
+    std::vector<std::string> elems;
+    split(s, delim, std::back_inserter(elems));
+    return elems;
 }
