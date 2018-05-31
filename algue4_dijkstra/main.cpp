@@ -12,12 +12,11 @@ using namespace std;
 class Nodes {
 private:
 	string Stationsname;
-	string Linie;
 	int Entfernung;
+	vector <string> Nebenstation;
 public:
-	Nodes(string StName, string Lin,int Entf) {
+	Nodes(string StName,int Entf) {
 		Stationsname = StName;
-		Linie = Lin;
 		Entfernung = Entf;
 	}
 	~Nodes() {
@@ -26,17 +25,22 @@ public:
 	{
 		return this->Stationsname;
 	}
-	string getLinie() const
-	{
-		return this->Linie;
-	}
 	int getEntfernung() const
 	{
 		return this->Entfernung;
 	}
+	bool isLonely()
+	{
+		if (Nebenstation.size() == 0)
+			return true;
+		return false;
+	}
+	vector<string> getNeben() {
+		return Nebenstation;
+	}
 	void displayInfo()
 	{
-		cout << " :: " << this->Stationsname << " :: " << this->Linie << " :: " << this->Entfernung << endl;
+		cout << " :: " << this->Stationsname << " :: " << this->Entfernung << endl;
 	}
 };
 
@@ -76,20 +80,17 @@ int main(int argc, char** argv) {
 		lines.emplace_back(stations_distances);
 	}*/
 
-	string St, L;
+	string St;
 	int E;
-	St = "Schwedenplatz";
-	L = "U1";
+	St = "Schwedenplatz:U1";
 	E = 5;
-	adjacency_list[0].push_back(Nodes(St, L, E));
-	St = "Stephansplatz";
-	L = "U1";
+	adjacency_list[0].push_back(Nodes(St, E));
+	St = "Stephansplatz:U1";
 	E = 2;
-	adjacency_list[0].push_back(Nodes(St, L, E));
-	St = "Karlsplatz";
-	L = "U1";
+	adjacency_list[0].push_back(Nodes(St, E));
+	St = "Karlsplatz:U1";
 	E = 3;
-	adjacency_list[0].push_back(Nodes(St, L, E));
+	adjacency_list[0].push_back(Nodes(St, E));
 
 	adjacency_list.push_back(vec);	//Neue Station hinzufügen
 	adjacency_list[1].push_back(adjacency_list[0][1]);
