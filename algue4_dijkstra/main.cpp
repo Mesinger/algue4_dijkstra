@@ -1,5 +1,6 @@
 
 #include <iostream>
+<<<<<<< HEAD
 #include <string>
 #include <unordered_set>
 #include <map>
@@ -43,11 +44,17 @@ public:
 
 
 typedef std::vector<std::vector<Nodes> > adjacency_list_t;
+=======
+#include <fstream>
+#include <vector>
+#include <sstream>
+>>>>>>> 06ebc2df0e82fd0d1a8586fc31914674fd8bcb73
 
 int main(int argc, char** argv) {
 	adjacency_list_t adjacency_list(1);//Netz mit 1 Station Initialisieren
 	vector<Nodes> vec;
 
+<<<<<<< HEAD
 	string St, L;
 	int E;
 	St = "Schwedenplatz";
@@ -62,6 +69,34 @@ int main(int argc, char** argv) {
 	L = "U1";
 	E = 3;
 	adjacency_list[0].push_back(Nodes(St, L, E));
+=======
+	/*command line arguments*/
+	if(argc != 2){
+		std::cerr << "Invalid arguments" << std::endl;
+		return EXIT_FAILURE;
+	}
+
+	std::ifstream input(argv[1]);
+
+	if(input.fail()){
+		std::cerr << "Invalid file" << std::endl;
+		return EXIT_FAILURE;
+	}
+
+	std::string line, sbuf;
+	std::vector<std::vector<std::string>> lines;
+	std::vector<std::string> stations_distances;
+
+	while(getline(input, line)){
+
+		std::stringstream ss(line);
+
+		while (ss >> sbuf)
+			stations_distances.emplace_back(sbuf);
+
+        lines.emplace_back(stations_distances);
+	}
+>>>>>>> 06ebc2df0e82fd0d1a8586fc31914674fd8bcb73
 
 	adjacency_list.push_back(vec);	//Neue Station hinzufügen
 	adjacency_list[1].push_back(adjacency_list[0][1]);
