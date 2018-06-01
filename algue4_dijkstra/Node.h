@@ -8,7 +8,7 @@ using namespace std;
 class Node {
 private:
 
-    vector <string> neighbourstation;
+    vector <string> neighborstations;
 public:
     Node(string& stationname, int dist);
     ~Node();

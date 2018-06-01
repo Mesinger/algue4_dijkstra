@@ -19,19 +19,19 @@ const string Node::getName()
 }
 
 bool Node::isLonely() {
-    return neighbourstation.size() == 0;
+    return neighborstations.size() == 0;
 }
 
 vector<string> &Node::getNeben() {
-    return neighbourstation;
+    return neighborstations;
 }
 
 void Node::appendNeben(string str)
 {
-	neighbourstation.push_back(str);
+	neighborstations.push_back(str);
 }
 
 void Node::displayInfo() {
 	std::cout << stationname << ": " << ", distance = " << distance;
-	std::cout << std::endl << "number of stations = " << neighbourstation.size() << std::endl;
+	std::cout << std::endl << "number of stations = " << neighborstations.size() << std::endl;
 }
