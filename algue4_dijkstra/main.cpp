@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <sstream>
+<<<<<<< HEAD
 #include <map>
 #include <algorithm>
 #include "Node.h"
@@ -39,6 +40,18 @@ TStatMap::const_iterator Test(const TStatMap& map, const string& search_for) {
 	else
 		return map.end();
 }
+=======
+#include "Node.h"
+
+template<typename Out>
+void split(const std::string &s, char delim, Out result);
+
+std::vector<std::string> split(const std::string &s, char delim);
+
+using namespace std;
+
+typedef std::vector<std::vector<Node>> adjacency_list_t;
+>>>>>>> 267b5cd8153be3a912f0faf6d409b8051c562ade
 
 int main(int argc, char** argv) {
 	
@@ -58,14 +71,18 @@ int main(int argc, char** argv) {
 	std::string sbuf;
 	std::vector<std::vector<std::string>> linestations;
     std::vector<std::vector<int>> linedistances;
+<<<<<<< HEAD
 	adjacency_list_t adjacency_list;
 	int adjsize = 0;
 	TStatMap statmap;	//pair<statname,number adj.list>
+=======
+>>>>>>> 267b5cd8153be3a912f0faf6d409b8051c562ade
 
     while(getline(input, sbuf)){
 
         std::vector<int> distances;
         std::vector<std::string> stations;
+<<<<<<< HEAD
 		int dist_to_next=0,dist_to_prev=0;
 		string stat_next,stat_prev,stat_zw,statraw,searchstring;
 
@@ -75,21 +92,36 @@ int main(int argc, char** argv) {
         sbuf = sbuf.substr(sbuf.find(':') + 3);	//herausschneiden der Liniennummer aus dem File
 
         std::vector<std::string> line = split(sbuf, '"');	//Anzahl der Stationen in dieser Linie
+=======
+
+        std::string linenumber;
+
+        linenumber = sbuf.substr(0, sbuf.find(':'));
+        sbuf = sbuf.substr(sbuf.find(':') + 3);
+
+        std::vector<std::string> line = split(sbuf, '"');
+>>>>>>> 267b5cd8153be3a912f0faf6d409b8051c562ade
 
         for(int i = 0; i < line.size(); i++){
 
             try{
 
                 //distance
+<<<<<<< HEAD
                 distances.emplace_back(stoi(line[i]));	//Versuch zum herauslesen der Distanz
 														//wenn nicht möglich -> Stationsname
 				dist_to_prev = dist_to_next;
 				dist_to_next = stoi(line[i]);
 				statmap.insert(TStatPair(statraw,adjsize));
+=======
+                distances.emplace_back(stoi(line[i]));
+
+>>>>>>> 267b5cd8153be3a912f0faf6d409b8051c562ade
             }catch (const std::invalid_argument& e){
 
                 //station
                 stations.emplace_back(line[i] + ":" + linenumber);
+<<<<<<< HEAD
 				stat_prev = stat_zw;
 				stat_zw = stat_next;
 				stat_next = line[i] + ":" + linenumber;
@@ -154,6 +186,15 @@ int main(int argc, char** argv) {
 		adjacency_list.pop_back();
 	}
 
+=======
+            }
+        }
+
+        linestations.emplace_back(stations);
+        linedistances.emplace_back(distances);
+    }
+
+>>>>>>> 267b5cd8153be3a912f0faf6d409b8051c562ade
 	input.close();
 
     if(linestations.size() != linedistances.size()){
@@ -161,8 +202,13 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
+<<<<<<< HEAD
 	//adjacency_list_t adjacency_list;
 	/*adjacency_list.reserve(linestations.size());
+=======
+	adjacency_list_t adjacency_list;
+	adjacency_list.reserve(linestations.size());
+>>>>>>> 267b5cd8153be3a912f0faf6d409b8051c562ade
 
     for(int i = 0; i < linestations.size(); i++){
 
@@ -186,7 +232,10 @@ int main(int argc, char** argv) {
         //last station
         adjacency_list[i].emplace_back(linestations[i][0], linedistances[i].back(), 0);
     }
+<<<<<<< HEAD
 	*/
+=======
+>>>>>>> 267b5cd8153be3a912f0faf6d409b8051c562ade
 
     for(std::vector<Node> line : adjacency_list){
         for(Node station : line)
