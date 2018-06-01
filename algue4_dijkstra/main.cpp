@@ -5,11 +5,7 @@
 #include <map>
 #include <algorithm>
 #include "Node.h"
-
-template<typename Out>
-void split(const std::string &s, char delim, Out result);
-
-std::vector<std::string> split(const std::string &s, char delim);
+#include "stringsplit.h"
 
 using namespace std;
 
@@ -131,89 +127,107 @@ int main(int argc, char** argv) {
 		linedistances.emplace_back(distances);
 	}
 
-
-	//Adjaceny-List Verkn�pfungen erstellen bei selber Station mit mehreren Linien :)
-	TStatMap::const_iterator it = statmap.begin();
-	TStatMap::const_iterator there;
-	TStatMap::const_iterator end = statmap.end();
-	vector<string>::const_iterator lineIt;
-	vector<string>::const_iterator lineEnd = LineArray.end();
-	std::vector<std::vector<Node>>::const_iterator AdjIt;
-	std::vector<std::vector<Node>>::const_iterator AdjEnd = adjacency_list.end();
-	std::vector<Node>::const_iterator NodeIt;
-	std::vector<Node>::const_iterator NodeEnd;
-
-	while (it != end)
-	{
-		lineIt = LineArray.begin();
-		string station = it->first.substr(0, it->first.find(':'));
-		while (lineIt != lineEnd)
-		{
-			string str = station + ":" + *lineIt;
-			there = statmap.find(str);
-			if (there != end && there != it)
-			{
-				//cout << it->second << endl;
-				adjacency_list[it->second].emplace_back(str,5);
-			}
-			lineIt++;
-		}
-		
-		it++;
-	}
-	it = statmap.begin();
-	while (it != end)
-	{
-		lineIt = LineArray.begin();
-		string station = it->first.substr(0, it->first.find(':'));
-		while (lineIt != lineEnd)
-		{
-			string str = station + ":" + *lineIt;
-			there = statmap.find(str);
-			if (there != end && there != it)
-			{
-				for (auto& row : adjacency_list)
-				{
-					for (auto& node : row)
-					{
-						if (node.stationname == it->first)
-							node.appendNeben(str);
-					}
-				}
-			}
-			lineIt++;
-		}
-		it++;
-	}
 	input.close();
 
-    if(linestations.size() != linedistances.size()){
-        std::cerr << "Invalid file" << std::endl;
-        return EXIT_FAILURE;
-    }
+	//Adjaceny-List Verkn�pfungen erstellen bei selber Station mit mehreren Linien :)
+	//TStatMap::const_iterator it = statmap.begin();
+//	TStatMap::const_iterator there;
+	//TStatMap::const_iterator end = statmap.end();
+	//vector<string>::const_iterator lineIt;
+	//vector<string>::const_iterator lineEnd = LineArray.end();
+//	std::vector<std::vector<Node>>::const_iterator AdjIt;
+//	std::vector<std::vector<Node>>::const_iterator AdjEnd = adjacency_list.end();
+//	std::vector<Node>::const_iterator NodeIt;
+//	std::vector<Node>::const_iterator NodeEnd;
 
-    for(std::vector<Node> line : adjacency_list){
-        for(Node station : line)
-            station.displayInfo();
-    }
+	for(auto it = statmap.begin(); it != statmap.end(); ++it){
 
-	std::cin.ignore();
-	std::cin.get();
+        string station = it->first.substr(0, it->first.find(':'));
+
+        for(auto lineIt = LineArray.begin(); lineIt != LineArray.end(); ++lineIt){
+
+            string str = station + ":" + *lineIt;
+            auto there = statmap.find(str);
+
+            if (there != statmap.end() && there != it)
+            {
+                //cout << it->second << endl;
+                adjacency_list[it->second].emplace_back(str,5);
+            }
+        }
+	}
+
+    for(auto it = statmap.begin(); it != statmap.end(); ++it){
+
+		string station = it->first.substr(0, it->first.find(':'));
+
+		for(auto lineIt = LineArray.begin(); lineIt != LineArray.end(); ++lineIt){
+
+			string str = station + ":" + *lineIt;
+			auto there = statmap.find(str);
+
+			if (there != statmap.end() && there != it) {
+
+				for (int i = 0; i < adjacency_list.size(); i++)
+					for (int j = 0; j < adjacency_list[i].size(); j++) {
+
+						if (adjacency_list[i][j].stationname == it->first)
+							adjacency_list[i][j].appendNeben(str);
+					}
+			}
+		}
+	}
+
+//	while (it != end)
+//	{
+//		lineIt = LineArray.begin();
+//		string station = it->first.substr(0, it->first.find(':'));
+//		while (lineIt != lineEnd)
+//		{
+//			string str = station + ":" + *lineIt;
+//			there = statmap.find(str);
+//			if (there != end && there != it)
+//			{
+//				//cout << it->second << endl;
+//				adjacency_list[it->second].emplace_back(str,5);
+//			}
+//			lineIt++;
+//		}
+//
+//		it++;
+//	}
+
+
+//	it = statmap.begin();
+//	while (it != end)
+//	{
+//		lineIt = LineArray.begin();
+//		string station = it->first.substr(0, it->first.find(':'));
+//		while (lineIt != lineEnd)
+//		{
+//			string str = station + ":" + *lineIt;
+//			there = statmap.find(str);
+//			if (there != end && there != it)
+//			{
+//				for (auto& row : adjacency_list)
+//				{
+//					for (auto& node : row)
+//					{
+//						if (node.stationname == it->first)
+//							node.appendNeben(str);
+//					}
+//				}
+//			}
+//			lineIt++;
+//		}
+//		it++;
+//	}
+
+    for (int i = 0; i < adjacency_list.size(); i++)
+        for (int j = 0; j < adjacency_list[i].size(); j++)
+            adjacency_list[i][j].displayInfo();
+
+	//std::cin.get();
 
     return EXIT_SUCCESS;
-}
-
-template<typename Out>
-void split(const std::string &s, char delim, Out result) {
-    std::stringstream ss(s);
-    std::string item;
-    while (std::getline(ss, item, delim)) {
-        *(result++) = item;
-    }
-}
-
-std::vector<std::string> split(const std::string &s, char delim) {
-    std::vector<std::string> elems;
-    split(s, delim, std::back_inserter(elems));
-    return elems;
 }

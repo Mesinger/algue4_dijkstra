@@ -12,7 +12,6 @@ Node::~Node() {
 
 }
 
-
 const string Node::getName()
 {
 	size_t pos = stationname.find(":");
