@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
     std::vector<std::vector<int>> linedistances;
 	adjacency_list_t adjacency_list;
 	int adjsize = 0;
-	TStatMap statmap;	//pair<statname,number adj.list>
+	TStatMap statmap;//pair<statname,number adj.list>
 	vector<string> LineArray;
 
 	std::vector<int> distances;
@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
 
 				//distance
 				distances.emplace_back(stoi(line[i]));	//Versuch zum herauslesen der Distanz
-														//wenn nicht möglich -> Stationsname
+														//wenn nicht mï¿½glich -> Stationsname
 				dist_to_prev = dist_to_next;
 				dist_to_next = stoi(line[i]);
 				statmap.insert(TStatPair(statraw, adjsize));
@@ -106,50 +106,15 @@ int main(int argc, char** argv) {
 
 			if (i % 2 == 0 && i != 0)
 			{
-				//int k = 0;
-				//string str;
-				//auto ret = Test(statmap, searchstring);	//Suche ob Station schon vorhanden 
-				////(Daweil nur mit max. 2 Linien pro Station gültig)
-				//if (ret != statmap.end())//2te Linie auf selbe Station zb Praterstern
-				//{
-				//	str = ret->first;
-				//	int itr = ret->second;
-				//	adjacency_list[itr].emplace_back(stat_next, 5);	//Nebenstation in aktueller Station setzen
-				//	adjacency_list.emplace_back();
-				//	adjacency_list.emplace_back();
-				//	k = 1;
-				//	//Nachbarnode in Node setzen
-				//	vector< vector<Node> >::iterator start = adjacency_list.begin();
-				//	start += itr;
-				//	vector<Node>::iterator rowst = start->begin();
-				//	vector<Node>::iterator rowen = start->end();
-				//	for (; rowst != rowen; ++rowst)
-				//	{
-				//		size_t pos = str.find(":");
-
-				//		if (str.substr(0, pos) == rowst->getName())	//Eintragen des Nachbarvektors in der jetzt aktuellen Node
-				//			rowst->appendNeben(str);
-				//	}
-
-				//}
-				//if (k != 1)
 				adjacency_list.emplace_back();
 				if (stat_next != "")
-					adjacency_list[adjsize].emplace_back(stat_next, dist_to_next);//Nächste Station im Bezug auf die derzeitige eintragen
+					adjacency_list[adjsize].emplace_back(stat_next, dist_to_next);//Nï¿½chste Station im Bezug auf die derzeitige eintragen
 				if (stat_prev != "")
 					adjacency_list[adjsize].emplace_back(stat_prev, dist_to_prev);//Vorherige Station im Bezug auf die derzeitige eintragen
 				adjsize++;
-				//if (k == 1)
-				//{
-				//	adjacency_list[adjsize].emplace_back(str, 5);
-				//	adjacency_list[adjsize][0].appendNeben(stat_next);//Eintragung des Nachbarvektors in der 1. Node für spätere Suche
-				//	k = 0;
-				//	if (adjacency_list.size() - adjsize >= 2)
-				//		adjacency_list.pop_back();
-				//}
 			}
 		}
-		adjacency_list.emplace_back();	//Letzte Station hinzufügen
+		adjacency_list.emplace_back();	//Letzte Station hinzufï¿½gen
 		adjacency_list[adjsize].emplace_back(stat_zw, dist_to_next);
 		statmap.insert(TStatPair(statraw, adjsize));
 		adjsize++;
@@ -157,7 +122,7 @@ int main(int argc, char** argv) {
 		linestations.emplace_back(stations);	//[0][x]->erste Linie Stationen, [1][x]->zweite Linie Stationen,.....
 		linedistances.emplace_back(distances);	//[0][x]->Distanzen erste Linie, [1][x]->Distanzen zweite Linie
 
-		while (adjacency_list.size() > adjsize + 1)//Überflüssige (leere) Einträge im Vektor löschen
+		while (adjacency_list.size() > adjsize + 1)//ï¿½berflï¿½ssige (leere) Eintrï¿½ge im Vektor lï¿½schen
 		{
 			adjacency_list.pop_back();
 		}
@@ -167,7 +132,7 @@ int main(int argc, char** argv) {
 	}
 
 
-	//Adjaceny-List Verknüpfungen erstellen bei selber Station mit mehreren Linien :)
+	//Adjaceny-List Verknï¿½pfungen erstellen bei selber Station mit mehreren Linien :)
 	TStatMap::const_iterator it = statmap.begin();
 	TStatMap::const_iterator there;
 	TStatMap::const_iterator end = statmap.end();
@@ -177,6 +142,7 @@ int main(int argc, char** argv) {
 	std::vector<std::vector<Node>>::const_iterator AdjEnd = adjacency_list.end();
 	std::vector<Node>::const_iterator NodeIt;
 	std::vector<Node>::const_iterator NodeEnd;
+
 	while (it != end)
 	{
 		lineIt = LineArray.begin();
@@ -199,25 +165,11 @@ int main(int argc, char** argv) {
 					}
 				}
 			}
-			/*AdjIt = adjacency_list.begin();
-			while (AdjIt != AdjEnd)
-			{
-				NodeIt = AdjIt->begin();
-				NodeEnd = AdjIt->end();
-				while (NodeIt != NodeEnd)
-				{
-					if (*NodeIt.getName() == "")
-						NodeIt++;
-					NodeIt++;
-				}
-				AdjIt++;
-			}*/
 			lineIt++;
 		}
 		
 		it++;
 	}
-
 
 	input.close();
 
@@ -225,33 +177,6 @@ int main(int argc, char** argv) {
         std::cerr << "Invalid file" << std::endl;
         return EXIT_FAILURE;
     }
-
-	//adjacency_list_t adjacency_list;
-	/*adjacency_list.reserve(linestations.size());
-
-    for(int i = 0; i < linestations.size(); i++){
-
-        //std::cout << linestations[i].size() << linedistances[i].size();
-
-        if(linestations[i].size() != linedistances[i].size() + 1){
-            std::cerr << "Invalid file" << std::endl;
-            return EXIT_FAILURE;
-        }
-
-		adjacency_list.emplace_back();
-
-        //first station
-        adjacency_list[i].emplace_back(linestations[i][0], 0, linedistances[i].front());
-
-        for(int j = 1; j < linestations[i].size() - 1; j++){
-
-            adjacency_list[i].emplace_back(linestations[i][j], linedistances[i][j - 1], linedistances[i][j]);
-        }
-
-        //last station
-        adjacency_list[i].emplace_back(linestations[i][0], linedistances[i].back(), 0);
-    }
-	*/
 
     for(std::vector<Node> line : adjacency_list){
         for(Node station : line)
