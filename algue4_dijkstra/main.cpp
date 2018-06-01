@@ -61,17 +61,21 @@ int main(int argc, char** argv) {
 	adjacency_list_t adjacency_list;
 	int adjsize = 0;
 	TStatMap statmap;	//pair<statname,number adj.list>
+	vector<string> LineArray;
+
+	std::vector<int> distances;
+	std::vector<std::string> stations;
+	int dist_to_next, dist_to_prev;
+	string stat_next, stat_prev, stat_zw, statraw, searchstring;
+	std::string linenumber;//LinienNummer
 
 	while (getline(input, sbuf)) {
 
-		std::vector<int> distances;
-		std::vector<std::string> stations;
-		int dist_to_next = 0, dist_to_prev = 0;
-		string stat_next, stat_prev, stat_zw, statraw, searchstring;
-
-		std::string linenumber;//LinienNummer
+		dist_to_next = 0, dist_to_prev = 0;
+		stat_next="", stat_prev="", stat_zw="", statraw="", searchstring="";
 
 		linenumber = sbuf.substr(0, sbuf.find(':'));
+		LineArray.emplace_back(linenumber);
 		sbuf = sbuf.substr(sbuf.find(':') + 3);	//herausschneiden der Liniennummer aus dem File
 
 		std::vector<std::string> line = split(sbuf, '"');	//Anzahl der Stationen in dieser Linie
@@ -102,52 +106,53 @@ int main(int argc, char** argv) {
 
 			if (i % 2 == 0 && i != 0)
 			{
-				int k = 0;
-				string str;
-				auto ret = Test(statmap, searchstring);	//Suche ob Station schon vorhanden 
-				//(Daweil nur mit max. 2 Linien pro Station gültig)
-				if (ret != statmap.end())//2te Linie auf selbe Station zb Praterstern
-				{
-					str = ret->first;
-					int itr = ret->second;
-					adjacency_list[itr].emplace_back(stat_next, 5);	//Nebenstation in aktueller Station setzen
-					adjacency_list.emplace_back();
-					adjacency_list.emplace_back();
-					k = 1;
-					//Nachbarnode in Node setzen
-					vector< vector<Node> >::iterator start = adjacency_list.begin();
-					start += itr;
-					vector<Node>::iterator rowst = start->begin();
-					vector<Node>::iterator rowen = start->end();
-					for (; rowst != rowen; ++rowst)
-					{
-						size_t pos = str.find(":");
+				//int k = 0;
+				//string str;
+				//auto ret = Test(statmap, searchstring);	//Suche ob Station schon vorhanden 
+				////(Daweil nur mit max. 2 Linien pro Station gültig)
+				//if (ret != statmap.end())//2te Linie auf selbe Station zb Praterstern
+				//{
+				//	str = ret->first;
+				//	int itr = ret->second;
+				//	adjacency_list[itr].emplace_back(stat_next, 5);	//Nebenstation in aktueller Station setzen
+				//	adjacency_list.emplace_back();
+				//	adjacency_list.emplace_back();
+				//	k = 1;
+				//	//Nachbarnode in Node setzen
+				//	vector< vector<Node> >::iterator start = adjacency_list.begin();
+				//	start += itr;
+				//	vector<Node>::iterator rowst = start->begin();
+				//	vector<Node>::iterator rowen = start->end();
+				//	for (; rowst != rowen; ++rowst)
+				//	{
+				//		size_t pos = str.find(":");
 
-						if (str.substr(0, pos) == rowst->getName())	//Eintragen des Nachbarvektors in der jetzt aktuellen Node
-							rowst->appendNeben(str);
-					}
+				//		if (str.substr(0, pos) == rowst->getName())	//Eintragen des Nachbarvektors in der jetzt aktuellen Node
+				//			rowst->appendNeben(str);
+				//	}
 
-				}
-				if (k != 1)
-					adjacency_list.emplace_back();
+				//}
+				//if (k != 1)
+				adjacency_list.emplace_back();
 				if (stat_next != "")
 					adjacency_list[adjsize].emplace_back(stat_next, dist_to_next);//Nächste Station im Bezug auf die derzeitige eintragen
 				if (stat_prev != "")
 					adjacency_list[adjsize].emplace_back(stat_prev, dist_to_prev);//Vorherige Station im Bezug auf die derzeitige eintragen
 				adjsize++;
-				if (k == 1)
-				{
-					adjacency_list[adjsize].emplace_back(str, 5);
-					adjacency_list[adjsize][0].appendNeben(stat_next);//Eintragung des Nachbarvektors in der 1. Node für spätere Suche
-					k = 0;
-					if (adjacency_list.size() - adjsize >= 2)
-						adjacency_list.pop_back();
-				}
+				//if (k == 1)
+				//{
+				//	adjacency_list[adjsize].emplace_back(str, 5);
+				//	adjacency_list[adjsize][0].appendNeben(stat_next);//Eintragung des Nachbarvektors in der 1. Node für spätere Suche
+				//	k = 0;
+				//	if (adjacency_list.size() - adjsize >= 2)
+				//		adjacency_list.pop_back();
+				//}
 			}
 		}
 		adjacency_list.emplace_back();	//Letzte Station hinzufügen
 		adjacency_list[adjsize].emplace_back(stat_zw, dist_to_next);
 		statmap.insert(TStatPair(statraw, adjsize));
+		adjsize++;
 
 		linestations.emplace_back(stations);	//[0][x]->erste Linie Stationen, [1][x]->zweite Linie Stationen,.....
 		linedistances.emplace_back(distances);	//[0][x]->Distanzen erste Linie, [1][x]->Distanzen zweite Linie
@@ -160,6 +165,59 @@ int main(int argc, char** argv) {
 		linestations.emplace_back(stations);
 		linedistances.emplace_back(distances);
 	}
+
+
+	//Adjaceny-List Verknüpfungen erstellen bei selber Station mit mehreren Linien :)
+	TStatMap::const_iterator it = statmap.begin();
+	TStatMap::const_iterator there;
+	TStatMap::const_iterator end = statmap.end();
+	vector<string>::const_iterator lineIt;
+	vector<string>::const_iterator lineEnd = LineArray.end();
+	std::vector<std::vector<Node>>::const_iterator AdjIt;
+	std::vector<std::vector<Node>>::const_iterator AdjEnd = adjacency_list.end();
+	std::vector<Node>::const_iterator NodeIt;
+	std::vector<Node>::const_iterator NodeEnd;
+	while (it != end)
+	{
+		lineIt = LineArray.begin();
+		string station = it->first.substr(0, it->first.find(':'));
+		while (lineIt != lineEnd)
+		{
+			string str = station + ":" + *lineIt;
+			there = statmap.find(str);
+			if (there != end && there != it)
+			{
+				//cout << it->second << endl;
+				adjacency_list[it->second].emplace_back(str,5);
+				//Noch zu machen: in node als nachbar setzen
+				for (auto& row : adjacency_list)
+				{
+					for (auto& node : row)
+					{
+						if (node.getName() == it->first)
+							node.appendNeben(str);
+					}
+				}
+			}
+			/*AdjIt = adjacency_list.begin();
+			while (AdjIt != AdjEnd)
+			{
+				NodeIt = AdjIt->begin();
+				NodeEnd = AdjIt->end();
+				while (NodeIt != NodeEnd)
+				{
+					if (*NodeIt.getName() == "")
+						NodeIt++;
+					NodeIt++;
+				}
+				AdjIt++;
+			}*/
+			lineIt++;
+		}
+		
+		it++;
+	}
+
 
 	input.close();
 

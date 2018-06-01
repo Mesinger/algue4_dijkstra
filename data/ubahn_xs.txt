@@ -1,0 +1,2 @@
+﻿U1: "Leopoldau" 2 "Suedtirolerplatz" 2 "Keplerplatz" 1 "Reumannplatz"
+U2: "Karlsplatz" 2 "Stadlau" 2 "Donauspital" 1 "Aspernstrasse"
