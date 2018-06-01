@@ -155,22 +155,36 @@ int main(int argc, char** argv) {
 			{
 				//cout << it->second << endl;
 				adjacency_list[it->second].emplace_back(str,5);
-				//Noch zu machen: in node als nachbar setzen
-				for (auto& row : adjacency_list)
-				{
-					for (auto& node : row)
-					{
-						if (strcmp(node.getName().c_str(), it->first.c_str()))
-							node.appendNeben(str);
-					}
-				}
 			}
 			lineIt++;
 		}
 		
 		it++;
 	}
-
+	it = statmap.begin();
+	while (it != end)
+	{
+		lineIt = LineArray.begin();
+		string station = it->first.substr(0, it->first.find(':'));
+		while (lineIt != lineEnd)
+		{
+			string str = station + ":" + *lineIt;
+			there = statmap.find(str);
+			if (there != end && there != it)
+			{
+				for (auto& row : adjacency_list)
+				{
+					for (auto& node : row)
+					{
+						if (node.stationname == it->first)
+							node.appendNeben(str);
+					}
+				}
+			}
+			lineIt++;
+		}
+		it++;
+	}
 	input.close();
 
     if(linestations.size() != linedistances.size()){
