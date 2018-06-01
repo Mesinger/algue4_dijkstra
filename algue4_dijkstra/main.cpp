@@ -103,26 +103,6 @@ int main(int argc, char** argv) {
 	std::cin.ignore();
 	std::cin.get();
 
-//	string St;
-//	int E;
-//	St = "Schwedenplatz:U1";
-//	E = 5;
-//	adjacency_list[0].push_back(Nodes(St, E));
-//	St = "Stephansplatz:U1";
-//	E = 2;
-//	adjacency_list[0].push_back(Nodes(St, E));
-//	St = "Karlsplatz:U1";
-//	E = 3;
-//	adjacency_list[0].push_back(Nodes(St, E));
-//
-//	adjacency_list.push_back(vec);	//Neue Station hinzuf�gen
-//	adjacency_list[1].push_back(adjacency_list[0][1]);
-//
-//	adjacency_list[0][0].displayInfo();
-//	adjacency_list[0][1].displayInfo();
-//	adjacency_list[0][2].displayInfo();
-//	adjacency_list[1][0].displayInfo();
-
     return EXIT_SUCCESS;
 }
 
