@@ -147,6 +147,7 @@ int main(int argc, char** argv) {
 		}
 		adjacency_list.emplace_back();	//Letzte Station hinzufügen
 		adjacency_list[adjsize].emplace_back(stat_zw, dist_to_next);
+		statmap.insert(TStatPair(statraw, adjsize));
 
 		linestations.emplace_back(stations);	//[0][x]->erste Linie Stationen, [1][x]->zweite Linie Stationen,.....
 		linedistances.emplace_back(distances);	//[0][x]->Distanzen erste Linie, [1][x]->Distanzen zweite Linie
