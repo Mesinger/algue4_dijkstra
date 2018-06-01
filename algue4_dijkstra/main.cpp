@@ -160,7 +160,7 @@ int main(int argc, char** argv) {
 				{
 					for (auto& node : row)
 					{
-						if (node.getName() == it->first)
+						if (strcmp(node.getName().c_str(), it->first.c_str()))
 							node.appendNeben(str);
 					}
 				}
