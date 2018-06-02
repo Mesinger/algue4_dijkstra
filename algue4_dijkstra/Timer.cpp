@@ -1,5 +1,4 @@
 #include "Timer.h"
-#include <chrono>
 #include <iostream>
 
 Timer::Timer(const std::string & _name)
