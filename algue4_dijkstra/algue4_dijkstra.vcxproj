@@ -151,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dijkstraAlgorythmus.h" />
+    <ClInclude Include="findinmap.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="stringsplit.h" />
     <ClInclude Include="Timer.h" />

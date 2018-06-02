@@ -24,7 +24,7 @@ TStatMap::const_iterator Test(const TStatMap& map, const string& search_for) {
     auto i = FindPrefix(map, search_for);
     if (i != map.end())
     {
-        std::cout << "Schon da: " << i->first << ", " << i->second << std::endl;
+        //std::cout << "Schon da: " << i->first << ", " << i->second << std::endl;
         return i;
     }
     else

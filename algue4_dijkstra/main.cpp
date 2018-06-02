@@ -4,9 +4,11 @@
 #include <sstream>
 #include <map>
 #include <algorithm>
+#include <iterator>
 #include "Node.h"
 #include "stringsplit.h"
 #include "findinmap.h"
+#include "dijkstraAlgorythmus.h"
 
 using namespace std;
 
@@ -129,9 +131,9 @@ int main(int argc, char** argv) {
 		}
 	}
 
-    for (int i = 0; i < adjacency_list.size(); i++)
+    /*for (int i = 0; i < adjacency_list.size(); i++)
         for (int j = 0; j < adjacency_list[i].size(); j++)
-            adjacency_list[i][j].displayInfo();
+            adjacency_list[i][j].displayInfo();*/
 
     //user input
 	string startin, endin;
@@ -218,6 +220,16 @@ int main(int argc, char** argv) {
         }
 
     }while(!validstart || !validend);
+
+	weight_t weight_vec;
+	index_t index_vec;
+
+	computeDijkstra(startstations[0], adjacency_list, statmap, weight_vec, index_vec);
+	std::cout << "Distance from : " << weight_vec[endstations[0]] << std::endl;
+	std::list<int> path = DijkstraGetShortestPathTo(endstations[0], index_vec);
+	std::cout << "Path : ";
+	std::copy(path.begin(), path.end(), std::ostream_iterator<int>(std::cout, " "));
+	std::cout << std::endl;
 
 	//std::cin.get();
 

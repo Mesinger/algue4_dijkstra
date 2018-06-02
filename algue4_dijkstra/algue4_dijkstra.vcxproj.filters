@@ -44,5 +44,8 @@
     <ClInclude Include="dijkstraAlgorythmus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="findinmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
