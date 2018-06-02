@@ -26,70 +26,66 @@ int main(int argc, char** argv) {
 	}
 
 	adjacency_list_t adjacency_list;
-	int adjsize = 0;
 	TStatMap statmap;//pair<statname,number adj.list>
 	vector<string> LineArray;
 
-	std::vector<int> distances;
-	std::vector<std::string> stations;
-	int dist_to_next, dist_to_prev;
-	string stat_next, stat_prev, stat_zw, statraw, searchstring;
-	std::string linenumber;//LinienNummer
+	{
+		int adjsize = 0;
+		int dist_to_next, dist_to_prev;
+		string stat_next, stat_prev, stat_zw, statraw, searchstring;
+		std::string linenumber;//LinienNummer
 
-    std::string sbuf;
-	while (getline(input, sbuf)) {
+		std::string sbuf;
+		while (getline(input, sbuf)) {
 
-		dist_to_next = 0, dist_to_prev = 0;
-		stat_next="", stat_prev="", stat_zw="", statraw="", searchstring="";
+			dist_to_next = 0, dist_to_prev = 0;
+			stat_next="", stat_prev="", stat_zw="", statraw="", searchstring="";
 
-		linenumber = sbuf.substr(0, sbuf.find(':'));
-		LineArray.emplace_back(linenumber);
-		sbuf = sbuf.substr(sbuf.find(':') + 3);	//herausschneiden der Liniennummer aus dem File
+			linenumber = sbuf.substr(0, sbuf.find(':'));
+			LineArray.emplace_back(linenumber);
+			sbuf = sbuf.substr(sbuf.find(':') + 3);	//herausschneiden der Liniennummer aus dem File
 
-		std::vector<std::string> line = split(sbuf, '"');	//Anzahl der Stationen in dieser Linie
+			std::vector<std::string> line = split(sbuf, '"');	//Anzahl der Stationen in dieser Linie
 
-		for (int i = 0; i < line.size(); i++) {
+			for (int i = 0; i < line.size(); i++) {
 
-			try {
+				try {
 
-				//distance
-				distances.emplace_back(stoi(line[i]));	//Versuch zum herauslesen der Distanz
-														//wenn nicht m�glich -> Stationsname
-				dist_to_prev = dist_to_next;
-				dist_to_next = stoi(line[i]);
-				statmap.insert(TStatPair(statraw, adjsize));
-				distances.emplace_back(stoi(line[i]));
+					//distance	//Versuch zum herauslesen der Distanz
+					//wenn nicht m�glich -> Stationsname
+					dist_to_next = stoi(line[i]);
+					dist_to_prev = dist_to_next;
+					statmap.insert(TStatPair(statraw, adjsize));
+				}
+				catch (const std::invalid_argument& e) {
 
+					//station
+					stat_prev = stat_zw;
+					stat_zw = stat_next;
+					stat_next = line[i] + ":" + linenumber;
+					statraw = line[i] + ":" + linenumber;
+					searchstring = line[i] + ":";
+				}
+
+				if (i % 2 == 0 && i != 0)
+				{
+					adjacency_list.emplace_back();
+					if (stat_next != "")
+						adjacency_list[adjsize].emplace_back(stat_next, dist_to_next);//N�chste Station im Bezug auf die derzeitige eintragen
+					if (stat_prev != "")
+						adjacency_list[adjsize].emplace_back(stat_prev, dist_to_prev);//Vorherige Station im Bezug auf die derzeitige eintragen
+					adjsize++;
+				}
 			}
-			catch (const std::invalid_argument& e) {
+			adjacency_list.emplace_back();	//Letzte Station hinzuf�gen
+			adjacency_list[adjsize].emplace_back(stat_zw, dist_to_next);
+			statmap.insert(TStatPair(statraw, adjsize));
+			adjsize++;
 
-				//station
-				stations.emplace_back(line[i] + ":" + linenumber);
-				stat_prev = stat_zw;
-				stat_zw = stat_next;
-				stat_next = line[i] + ":" + linenumber;
-				statraw = line[i] + ":" + linenumber;
-				searchstring = line[i] + ":";
-			}
-
-			if (i % 2 == 0 && i != 0)
+			while (adjacency_list.size() > adjsize + 1)//�berfl�ssige (leere) Eintr�ge im Vektor l�schen
 			{
-				adjacency_list.emplace_back();
-				if (stat_next != "")
-					adjacency_list[adjsize].emplace_back(stat_next, dist_to_next);//N�chste Station im Bezug auf die derzeitige eintragen
-				if (stat_prev != "")
-					adjacency_list[adjsize].emplace_back(stat_prev, dist_to_prev);//Vorherige Station im Bezug auf die derzeitige eintragen
-				adjsize++;
+				adjacency_list.pop_back();
 			}
-		}
-		adjacency_list.emplace_back();	//Letzte Station hinzuf�gen
-		adjacency_list[adjsize].emplace_back(stat_zw, dist_to_next);
-		statmap.insert(TStatPair(statraw, adjsize));
-		adjsize++;
-
-		while (adjacency_list.size() > adjsize + 1)//�berfl�ssige (leere) Eintr�ge im Vektor l�schen
-		{
-			adjacency_list.pop_back();
 		}
 	}
 

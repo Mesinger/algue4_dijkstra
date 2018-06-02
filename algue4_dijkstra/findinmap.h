@@ -5,8 +5,8 @@
 #include <iostream>
 
 typedef std::vector<std::vector<Node>> adjacency_list_t;
-typedef pair<string, int> TStatPair;
-typedef std::map<string, int> TStatMap;
+typedef std::pair<std::string, int> TStatPair;
+typedef std::map<std::string, int> TStatMap;
 
 //Suchfunktion um Stationen in der Map zu finden
 TStatMap::const_iterator FindPrefix(const TStatMap& map, const string& search_for) {
