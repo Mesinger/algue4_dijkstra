@@ -143,12 +143,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="dijkstraAlgorythmus.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="stringsplit.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="dijkstraAlgorythmus.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="stringsplit.h" />
     <ClInclude Include="Timer.h" />

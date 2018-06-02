@@ -219,12 +219,6 @@ int main(int argc, char** argv) {
 
     }while(!validstart || !validend);
 
-<<<<<<< HEAD
-
-=======
-    std::vector<Node> startstations, endstations;
->>>>>>> cea755f4885ac9abdef39f134e11c69f7990ebe3
-
 	//std::cin.get();
 
     return EXIT_SUCCESS;
