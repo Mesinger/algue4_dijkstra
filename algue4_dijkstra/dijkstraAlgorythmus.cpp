@@ -1,5 +1,4 @@
 #include "dijkstraAlgorythmus.h"
-#include "findinmap.h"
 
 TStatMap::const_iterator mapIt;
 

@@ -2,6 +2,7 @@
 #include "Node.h"
 #include "stringsplit.h"
 #include "Timer.h"
+#include "findinmap.h"
 
 #include <string>
 #include <vector>
