@@ -228,33 +228,44 @@ int main(int argc, char** argv) {
             adjacency_list[i][j].displayInfo();
 
     //user input
-    std::string startstation, endstation;
+	string startin, endin;
+    vector<int> startstations, endstations;
+	TStatMap::const_iterator mapIt;
     bool validstart = false;
     bool validend = false;
 
     do{
 
-        std::string buf;
-
 		if (!validstart)
 		{
 			std::cout << "Start station: ";
-			std::cin >> startstation;
+			std::cin >> startin;
 
 			if (cin.fail()) {
 				std::cerr << "Invalid station" << std::endl;
 				continue;
 			}
-
-			for (auto it = statmap.begin(); it != statmap.end(); ++it) {
-
-				buf = it->first.substr(0, it->first.find(':'));
-
-				if (startstation == buf) {
-					validstart = true;
-					break;
+			
+			mapIt = Test(statmap, startin);
+			if (mapIt != statmap.end())
+			{
+				validstart = true;
+				for (int j = 0; j < adjacency_list[mapIt->second].size(); j++) {
+					for (auto lineIt:LineArray)//Mögliche Linien
+					{
+						string test = startin + ":" + lineIt;
+						if (adjacency_list[mapIt->second][j].stationname == test)
+						{
+							mapIt=Test(statmap, test);
+							if (mapIt != statmap.end())
+							{
+								startstations.emplace_back(mapIt->second);
+							}
+						}
+					}
 				}
 			}
+			
 		}
 
         if(!validstart){
@@ -265,22 +276,34 @@ int main(int argc, char** argv) {
 		if (!validend)
 		{
 			std::cout << "End station: ";
-			std::cin >> endstation;
+			std::cin >> endin;
 
 			if (cin.fail()) {
 				std::cerr << "Invalid station" << std::endl;
 				continue;
 			}
 
-			for (auto it = statmap.begin(); it != statmap.end(); ++it) {
-
-				buf = it->first.substr(0, it->first.find(':'));
-
-				if (endstation == buf) {
-					validend = true;
-					break;
+			mapIt = Test(statmap, endin);
+			if (mapIt != statmap.end())
+			{
+				validend = true;
+				for (int j = 0; j < adjacency_list[mapIt->second].size(); j++) {
+					for (auto lineIt : LineArray)//Mögliche Linien
+					{
+						string test = endin + ":" + lineIt;
+						if (adjacency_list[mapIt->second][j].stationname == test)
+						{
+							mapIt = Test(statmap, test);
+							if (mapIt != statmap.end())
+							{
+								endstations.emplace_back(mapIt->second);
+							}
+						}
+					}
 				}
 			}
+
+			
 		}
 
         if(!validend){
@@ -289,8 +312,6 @@ int main(int argc, char** argv) {
         }
 
     }while(!validstart || !validend);
-
-    std::vector<Node> startstations, endstations;
 
 
 
