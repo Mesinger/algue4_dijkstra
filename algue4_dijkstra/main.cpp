@@ -138,7 +138,7 @@ int main(int argc, char** argv) {
     //user input
 	string startin, endin;
     vector<int> startstations, endstations;
-	TStatMap::const_iterator mapIt;
+	TStatMap::const_iterator mapIt, mapIt2;
     bool validstart = false;
     bool validend = false;
 
@@ -157,6 +157,7 @@ int main(int argc, char** argv) {
 			mapIt = Test(statmap, startin);
 			if (mapIt != statmap.end())
 			{
+				startstations.emplace_back(mapIt->second);
 				validstart = true;
 				for (int j = 0; j < adjacency_list[mapIt->second].size(); j++) {
 					for (auto lineIt:LineArray)//Mögliche Linien
@@ -164,10 +165,10 @@ int main(int argc, char** argv) {
 						string test = startin + ":" + lineIt;
 						if (adjacency_list[mapIt->second][j].stationname == test)
 						{
-							mapIt=Test(statmap, test);
-							if (mapIt != statmap.end())
+							mapIt2=Test(statmap, test);
+							if (mapIt2 != statmap.end() && mapIt2->second != startstations[0])
 							{
-								startstations.emplace_back(mapIt->second);
+								startstations.emplace_back(mapIt2->second);
 							}
 						}
 					}
@@ -194,6 +195,7 @@ int main(int argc, char** argv) {
 			mapIt = Test(statmap, endin);
 			if (mapIt != statmap.end())
 			{
+				endstations.emplace_back(mapIt->second);
 				validend = true;
 				for (int j = 0; j < adjacency_list[mapIt->second].size(); j++) {
 					for (auto lineIt : LineArray)//Mögliche Linien
@@ -201,10 +203,10 @@ int main(int argc, char** argv) {
 						string test = endin + ":" + lineIt;
 						if (adjacency_list[mapIt->second][j].stationname == test)
 						{
-							mapIt = Test(statmap, test);
-							if (mapIt != statmap.end())
+							mapIt2 = Test(statmap, test);
+							if (mapIt2 != statmap.end() && mapIt2->second != endstations[0])
 							{
-								endstations.emplace_back(mapIt->second);
+								endstations.emplace_back(mapIt2->second);
 							}
 						}
 					}
@@ -225,13 +227,32 @@ int main(int argc, char** argv) {
 	index_t index_vec;
 
 	computeDijkstra(startstations[0], adjacency_list, statmap, weight_vec, index_vec);
-	std::cout << "Distance from : " << weight_vec[endstations[0]] << std::endl;
 	std::list<int> path = DijkstraGetShortestPathTo(endstations[0], index_vec);
 	std::cout << "Path : ";
-	std::copy(path.begin(), path.end(), std::ostream_iterator<int>(std::cout, " "));
-	std::cout << std::endl;
+	list<int>::const_iterator pathIt;
+	TStatMap::const_iterator mIt;
+	string sta, en;
+	for (pathIt = path.begin(); pathIt != path.end(); ++pathIt)
+	{
+		for (mIt = statmap.begin();mIt != statmap.end(); mIt++)
+		{
+			if (mIt->second == *pathIt)
+			{
+				cout << mIt->first << " ";
+				if (pathIt == path.begin())
+					sta = mIt->first;
+				en = mIt->first;
+			}
+				
+		}
+	}
+	std::cout << endl << "Distance from "<< sta<< " to " << en << " is " << weight_vec[endstations[0]] << " minutes" << std::endl;
 
-	//std::cin.get();
+	/*std::copy(path.begin(), path.end(), std::ostream_iterator<int>(std::cout, " "));
+	std::cout << std::endl;*/
 
-    return EXIT_SUCCESS;
+	cin.ignore();
+	std::cin.get();
+
+    return 0;
 }
