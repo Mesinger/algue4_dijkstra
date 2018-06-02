@@ -236,46 +236,52 @@ int main(int argc, char** argv) {
 
         std::string buf;
 
-        std::cout << "Start station: ";
-        std::cin >> startstation;
+		if (!validstart)
+		{
+			std::cout << "Start station: ";
+			std::cin >> startstation;
 
-        if(cin.fail()){
-            std::cerr << "Invalid station" << std::endl;
-            continue;
-        }
+			if (cin.fail()) {
+				std::cerr << "Invalid station" << std::endl;
+				continue;
+			}
 
-        for(auto it = statmap.begin(); it != statmap.end(); ++it){
+			for (auto it = statmap.begin(); it != statmap.end(); ++it) {
 
-            buf = it->first.substr(0, it->first.find(':'));
+				buf = it->first.substr(0, it->first.find(':'));
 
-            if(startstation == buf){
-                validstart = true;
-                break;
-            }
-        }
+				if (startstation == buf) {
+					validstart = true;
+					break;
+				}
+			}
+		}
 
         if(!validstart){
             std::cerr << "Invalid station" << std::endl;
             continue;
         }
 
-        std::cout << "End station: ";
-        std::cin >> endstation;
+		if (!validend)
+		{
+			std::cout << "End station: ";
+			std::cin >> endstation;
 
-        if(cin.fail()){
-            std::cerr << "Invalid station" << std::endl;
-            continue;
-        }
+			if (cin.fail()) {
+				std::cerr << "Invalid station" << std::endl;
+				continue;
+			}
 
-        for(auto it = statmap.begin(); it != statmap.end(); ++it){
+			for (auto it = statmap.begin(); it != statmap.end(); ++it) {
 
-            buf = it->first.substr(0, it->first.find(':'));
+				buf = it->first.substr(0, it->first.find(':'));
 
-            if(endstation == buf){
-                validend = true;
-                break;
-            }
-        }
+				if (endstation == buf) {
+					validend = true;
+					break;
+				}
+			}
+		}
 
         if(!validend){
             std::cerr << "Invalid station" << std::endl;
