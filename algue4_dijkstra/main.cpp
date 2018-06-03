@@ -27,9 +27,13 @@ int main(int argc, char** argv) {
 		return EXIT_FAILURE;
 	}
 
+
 	adjacency_list_t adjacency_list;
 	TStatMap statmap;//pair<statname,number adj.list>
 	vector<string> LineArray;
+
+	string ring;
+	int ringnum;
 
 	{
 		int adjsize = 0;
@@ -67,6 +71,12 @@ int main(int argc, char** argv) {
 					stat_next = line[i] + ":" + linenumber;
 					statraw = line[i] + ":" + linenumber;
 					searchstring = line[i] + ":";
+					if (i == 0)
+					{
+						ring = stat_next;
+						ringnum = adjsize;
+					}
+						
 				}
 
 				if (i % 2 == 0 && i != 0)
@@ -79,11 +89,20 @@ int main(int argc, char** argv) {
 					adjsize++;
 				}
 			}
-			adjacency_list.emplace_back();	//Letzte Station hinzuf�gen
-			adjacency_list[adjsize].emplace_back(stat_zw, dist_to_next);
-			statmap.insert(TStatPair(statraw, adjsize));
-			adjsize++;
 
+			if (ring == statraw)
+			{
+				adjacency_list[ringnum].emplace_back(stat_zw, dist_to_next);
+				//adjacency_list[adjsize-1].emplace_back(ring, dist_to_next);
+			}
+			else
+			{ 
+				adjacency_list.emplace_back();	//Letzte Station hinzuf�gen
+				adjacency_list[adjsize].emplace_back(stat_zw, dist_to_next);
+				statmap.insert(TStatPair(statraw, adjsize));
+				adjsize++;
+			}
+			
 			while (adjacency_list.size() > adjsize + 1)//�berfl�ssige (leere) Eintr�ge im Vektor l�schen
 			{
 				adjacency_list.pop_back();
@@ -93,6 +112,7 @@ int main(int argc, char** argv) {
 
 	input.close();
 
+	//Nebenstationen in AdjList eintragen
 	for(auto it = statmap.begin(); it != statmap.end(); ++it){
 
         string station = it->first.substr(0, it->first.find(':'));
@@ -110,6 +130,7 @@ int main(int argc, char** argv) {
         }
 	}
 
+	//Benenstationen in Node eintragen
     for(auto it = statmap.begin(); it != statmap.end(); ++it){
 
 		string station = it->first.substr(0, it->first.find(':'));
