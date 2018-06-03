@@ -9,6 +9,7 @@
 #include "stringsplit.h"
 #include "findinmap.h"
 #include "dijkstraAlgorythmus.h"
+#include "UserInputHandler.h"
 
 using namespace std;
 
@@ -152,98 +153,18 @@ int main(int argc, char** argv) {
 		}
 	}
 
-    /*for (int i = 0; i < adjacency_list.size(); i++)
-        for (int j = 0; j < adjacency_list[i].size(); j++)
-            adjacency_list[i][j].displayInfo();*/
+	//user input
+	std::vector<int>startstations, endstations;
 
-    //user input
-	string startin, endin;
-    vector<int> startstations, endstations;
-	TStatMap::const_iterator mapIt, mapIt2;
-    bool validstart = false;
-    bool validend = false;
+	UserInputHandler userInputHandler;
 
-    do{
+	userInputHandler.getStartStation(startstations, adjacency_list, statmap, LineArray);
+	userInputHandler.getEndStation(endstations, adjacency_list, statmap, LineArray);
 
-		if (!validstart)
-		{
-			std::cout << "Start station: ";
-			std::cin >> startin;
-
-			if (cin.fail()) {
-				std::cerr << "Invalid station" << std::endl;
-				continue;
-			}
-			
-			mapIt = Test(statmap, startin);
-			if (mapIt != statmap.end())
-			{
-				startstations.emplace_back(mapIt->second);
-				validstart = true;
-				for (int j = 0; j < adjacency_list[mapIt->second].size(); j++) {
-					for (auto lineIt:LineArray)//Mögliche Linien
-					{
-						string test = startin + ":" + lineIt;
-						if (adjacency_list[mapIt->second][j].stationname == test)
-						{
-							mapIt2=Test(statmap, test);
-							if (mapIt2 != statmap.end() && mapIt2->second != startstations[0])
-							{
-								startstations.emplace_back(mapIt2->second);
-							}
-						}
-					}
-				}
-			}
-		}
-
-        if(!validstart){
-            std::cerr << "Invalid station" << std::endl;
-            continue;
-        }
-
-		if (!validend)
-		{
-			std::cout << "End station: ";
-			std::cin >> endin;
-
-			if (cin.fail()) {
-				std::cerr << "Invalid station" << std::endl;
-				continue;
-			}
-
-			mapIt = Test(statmap, endin);
-			if (mapIt != statmap.end())
-			{
-				endstations.emplace_back(mapIt->second);
-				validend = true;
-				for (int j = 0; j < adjacency_list[mapIt->second].size(); j++) {
-					for (auto lineIt : LineArray)//Mögliche Linien
-					{
-						string test = endin + ":" + lineIt;
-						if (adjacency_list[mapIt->second][j].stationname == test)
-						{
-							mapIt2 = Test(statmap, test);
-							if (mapIt2 != statmap.end() && mapIt2->second != endstations[0])
-							{
-								endstations.emplace_back(mapIt2->second);
-							}
-						}
-					}
-				}
-			}
-		}
-
-        if(!validend){
-            std::cerr << "Invalid station" << std::endl;
-            continue;
-        }
-
-    }while(!validstart || !validend);
-
+	//calculating shortest trip
     int shortestTravelTime = INT_MAX;
     std::list<int> shortestPath;
-    for(int i = 0; i < startstations.size(); i++){
+    for(int i = 0; i < startstations.size(); i++){//loop through all startstations
 
         weight_t weight_vec;
         index_t index_vec;
@@ -251,9 +172,9 @@ int main(int argc, char** argv) {
         //dijkstra from startpoint to every station in the graph
         computeDijkstra(startstations[i], adjacency_list, statmap, weight_vec, index_vec);
 
-        for(int j = 0; j < endstations.size(); j++){
+        for(int j = 0; j < endstations.size(); j++){//loop through all endstations
 
-            if(weight_vec[endstations[j]] < shortestTravelTime){
+            if(weight_vec[endstations[j]] < shortestTravelTime){//find shortest trip
 
                 shortestTravelTime = weight_vec[endstations[j]];
                 shortestPath = DijkstraGetShortestPathTo(endstations[j], index_vec);
@@ -261,23 +182,8 @@ int main(int argc, char** argv) {
         }
     }
 
-    std::cout << "Shortest traveltime: " << std::endl;
-
-    std::string startstation, endstation;
-    for(auto pathit = shortestPath.begin(); pathit != shortestPath.end(); ++pathit){
-        for(auto stationsit = statmap.begin(); stationsit != statmap.end(); ++stationsit){
-
-            if (stationsit->second == *pathit)//station id in path => print station
-            {
-                std::cout << stationsit->first << " ";
-                if (pathit == shortestPath.begin())
-                    startstation = stationsit->first;
-                endstation = stationsit->first;
-            }
-        }
-    }
-
-    std::cout << endl << "Time from "<< startstation << " to " << endstation << " is " << shortestTravelTime << " minutes" << std::endl << std::endl;
+    //output
+	printTrip(shortestPath, statmap, shortestTravelTime);
 
 	cin.ignore();
 	std::cin.get();

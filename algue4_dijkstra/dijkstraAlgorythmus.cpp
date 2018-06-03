@@ -53,3 +53,24 @@ std::list<int> DijkstraGetShortestPathTo(
 		path.push_front(index);
 	return path;
 }
+
+void printTrip(std::list<int> &path, TStatMap &stations, int weight) {
+
+    std::cout << "Shortest trip: " << std::endl;
+
+    std::string startstation, endstation;
+    for(auto pathit = path.begin(); pathit != path.end(); ++pathit){
+        for(auto stationsit = stations.begin(); stationsit != stations.end(); ++stationsit){
+
+            if (stationsit->second == *pathit)//station id in path => print station
+            {
+                std::cout << stationsit->first << " ";
+                if (pathit == path.begin())
+                    startstation = stationsit->first;
+                endstation = stationsit->first;
+            }
+        }
+    }
+
+    std::cout << endl << "Time from "<< startstation << " to " << endstation << " is " << weight << " minutes" << std::endl << std::endl;
+}
