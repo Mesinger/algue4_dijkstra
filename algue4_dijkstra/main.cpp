@@ -9,6 +9,7 @@
 #include "stringsplit.h"
 #include "findinmap.h"
 #include "dijkstraAlgorythmus.h"
+#include "UserInputHandler.h"
 
 using namespace std;
 
@@ -151,24 +152,20 @@ int main(int argc, char** argv) {
 		}
 	}
 
-    /*for (int i = 0; i < adjacency_list.size(); i++)
-        for (int j = 0; j < adjacency_list[i].size(); j++)
-            adjacency_list[i][j].displayInfo();*/
+	//user input
+	std::vector<int>startstations, endstations;
 
-    //user input
-	string startin, endin;
-    vector<int> startstations, endstations;
-	TStatMap::const_iterator mapIt, mapIt2;
-    bool validstart = false;
-    bool validend = false;
+	UserInputHandler userInputHandler;
 
-    do{
+	userInputHandler.getStartStation(startstations, adjacency_list, statmap, LineArray);
+	userInputHandler.getEndStation(endstations, adjacency_list, statmap, LineArray);
 
-		if (!validstart)
-		{
-			std::cout << "Start station: ";
-			std::cin >> startin;
+	//calculating shortest trip
+    int shortestTravelTime = INT_MAX;
+    std::list<int> shortestPath;
+    for(int i = 0; i < startstations.size(); i++){//loop through all startstations
 
+<<<<<<< HEAD
 			if (cin.fail()) {
 				std::cerr << "Invalid station" << std::endl;
 				continue;
@@ -201,22 +198,19 @@ int main(int argc, char** argv) {
 			}
 			
 		}
+=======
+        weight_t weight_vec;
+        index_t index_vec;
+>>>>>>> a056039fe89d722e9482a161ee89cfe605b6d78a
 
-        if(!validstart){
-            std::cerr << "Invalid station" << std::endl;
-            continue;
-        }
+        //dijkstra from startpoint to every station in the graph
+        computeDijkstra(startstations[i], adjacency_list, statmap, weight_vec, index_vec);
 
-		if (!validend)
-		{
-			std::cout << "End station: ";
-			std::cin >> endin;
+        for(int j = 0; j < endstations.size(); j++){//loop through all endstations
 
-			if (cin.fail()) {
-				std::cerr << "Invalid station" << std::endl;
-				continue;
-			}
+            if(weight_vec[endstations[j]] < shortestTravelTime){//find shortest trip
 
+<<<<<<< HEAD
 			mapIt = Test(statmap, endin);
 			if (mapIt != statmap.end())
 			{
@@ -249,37 +243,16 @@ int main(int argc, char** argv) {
         if(!validend){
             std::cerr << "Invalid station" << std::endl;
             continue;
+=======
+                shortestTravelTime = weight_vec[endstations[j]];
+                shortestPath = DijkstraGetShortestPathTo(endstations[j], index_vec);
+            }
+>>>>>>> a056039fe89d722e9482a161ee89cfe605b6d78a
         }
+    }
 
-    }while(!validstart || !validend);
-
-	weight_t weight_vec;
-	index_t index_vec;
-
-	computeDijkstra(startstations[0], adjacency_list, statmap, weight_vec, index_vec);
-	std::list<int> path = DijkstraGetShortestPathTo(endstations[0], index_vec);
-	std::cout << "Path : ";
-	list<int>::const_iterator pathIt;
-	TStatMap::const_iterator mIt;
-	string sta, en;
-	for (pathIt = path.begin(); pathIt != path.end(); ++pathIt)
-	{
-		for (mIt = statmap.begin();mIt != statmap.end(); mIt++)
-		{
-			if (mIt->second == *pathIt)
-			{
-				cout << mIt->first << " ";
-				if (pathIt == path.begin())
-					sta = mIt->first;
-				en = mIt->first;
-			}
-				
-		}
-	}
-	std::cout << endl << "Distance from "<< sta<< " to " << en << " is " << weight_vec[endstations[0]] << " minutes" << std::endl;
-
-	/*std::copy(path.begin(), path.end(), std::ostream_iterator<int>(std::cout, " "));
-	std::cout << std::endl;*/
+    //output
+	printTrip(shortestPath, statmap, shortestTravelTime);
 
 	cin.ignore();
 	std::cin.get();
