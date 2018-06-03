@@ -60,7 +60,7 @@ void UserInputHandler::getEndStation(std::vector<int> &endstations, adjacency_li
 
     do{
 
-        std::cout << "Start station: ";
+        std::cout << "End station: ";
         std::cin >> sbuf;
 
         if (cin.fail()) {

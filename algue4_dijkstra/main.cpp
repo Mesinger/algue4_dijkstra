@@ -163,45 +163,10 @@ int main(int argc, char** argv) {
 	//calculating shortest trip
     int shortestTravelTime = INT_MAX;
     std::list<int> shortestPath;
-    for(int i = 0; i < startstations.size(); i++){//loop through all startstations
-
-<<<<<<< HEAD
-			if (cin.fail()) {
-				std::cerr << "Invalid station" << std::endl;
-				continue;
-			}
-			
-			mapIt = Test(statmap, startin);
-			if (mapIt != statmap.end())
-			{
-				startstations.emplace_back(mapIt->second);
-				validstart = true;
-				for (int j = 0; j < adjacency_list[mapIt->second].size(); j++) {
-					for (auto lineIt:LineArray)//Mögliche Linien
-					{
-						string test = startin + ":" + lineIt;
-						if (adjacency_list[mapIt->second][j].stationname == test)
-						{
-							mapIt2=Test(statmap, test);
-							if (mapIt2 != statmap.end() && mapIt2->second != startstations[0])
-							{
-								startstations.emplace_back(mapIt2->second);
-							}
-						}
-					}
-				}
-			}
-			else
-			{
-				std::cerr << "Station not found" << std::endl;
-				continue;
-			}
-			
-		}
-=======
+    for(int i = 0; i < startstations.size(); i++)
+	{//loop through all startstations
         weight_t weight_vec;
         index_t index_vec;
->>>>>>> a056039fe89d722e9482a161ee89cfe605b6d78a
 
         //dijkstra from startpoint to every station in the graph
         computeDijkstra(startstations[i], adjacency_list, statmap, weight_vec, index_vec);
@@ -209,45 +174,9 @@ int main(int argc, char** argv) {
         for(int j = 0; j < endstations.size(); j++){//loop through all endstations
 
             if(weight_vec[endstations[j]] < shortestTravelTime){//find shortest trip
-
-<<<<<<< HEAD
-			mapIt = Test(statmap, endin);
-			if (mapIt != statmap.end())
-			{
-				endstations.emplace_back(mapIt->second);
-				validend = true;
-				for (int j = 0; j < adjacency_list[mapIt->second].size(); j++) {
-					for (auto lineIt : LineArray)//Mögliche Linien
-					{
-						string test = endin + ":" + lineIt;
-						if (adjacency_list[mapIt->second][j].stationname == test)
-						{
-							mapIt2 = Test(statmap, test);
-							if (mapIt2 != statmap.end() && mapIt2->second != endstations[0])
-							{
-								endstations.emplace_back(mapIt2->second);
-							}
-						}
-					}
-				}
-			}
-			else
-			{
-				std::cerr << "Station not found" << std::endl;
-				continue;
-			}
-
-			
-		}
-
-        if(!validend){
-            std::cerr << "Invalid station" << std::endl;
-            continue;
-=======
                 shortestTravelTime = weight_vec[endstations[j]];
                 shortestPath = DijkstraGetShortestPathTo(endstations[j], index_vec);
             }
->>>>>>> a056039fe89d722e9482a161ee89cfe605b6d78a
         }
     }
 
