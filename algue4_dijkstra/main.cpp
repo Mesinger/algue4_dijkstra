@@ -14,6 +14,12 @@ using namespace std;
 
 int main(int argc, char** argv) {
 	
+	adjacency_list_t adjacency_list;
+	TStatMap statmap;//pair<statname,number adj.list>
+	vector<string> LineArray;
+	string stat_next, stat_prev, stat_zw, statraw, searchstring, linenumber, ring, sbuf;
+	int ringnum, adjsize = 0, dist_to_next, dist_to_prev;
+
 	/*command line arguments*/
 	if (argc != 2) {
 		std::cerr << "Invalid arguments" << std::endl;
@@ -27,86 +33,79 @@ int main(int argc, char** argv) {
 		return EXIT_FAILURE;
 	}
 
+	while (getline(input, sbuf)) {
 
-	adjacency_list_t adjacency_list;
-	TStatMap statmap;//pair<statname,number adj.list>
-	vector<string> LineArray;
+		dist_to_next = 0, dist_to_prev = 0;
+		stat_next="", stat_prev="", stat_zw="", statraw="", searchstring="";
 
-	string ring;
-	int ringnum;
+		linenumber = sbuf.substr(0, sbuf.find(':'));//herausschneiden der Liniennummer aus dem File
+		LineArray.emplace_back(linenumber);
+		sbuf = sbuf.substr(sbuf.find(':') + 3);	
 
-	{
-		int adjsize = 0;
-		int dist_to_next, dist_to_prev;
-		string stat_next, stat_prev, stat_zw, statraw, searchstring;
-		std::string linenumber;//LinienNummer
+		std::vector<std::string> line = split(sbuf, '"');
 
-		std::string sbuf;
-		while (getline(input, sbuf)) {
+		for (int i = 0; i < line.size(); i++) {
 
-			dist_to_next = 0, dist_to_prev = 0;
-			stat_next="", stat_prev="", stat_zw="", statraw="", searchstring="";
+			try {
 
-			linenumber = sbuf.substr(0, sbuf.find(':'));
-			LineArray.emplace_back(linenumber);
-			sbuf = sbuf.substr(sbuf.find(':') + 3);	//herausschneiden der Liniennummer aus dem File
-
-			std::vector<std::string> line = split(sbuf, '"');	//Anzahl der Stationen in dieser Linie
-
-			for (int i = 0; i < line.size(); i++) {
-
-				try {
-
-					//distance	//Versuch zum herauslesen der Distanz
-					//wenn nicht m�glich -> Stationsname
-					dist_to_next = stoi(line[i]);
-					dist_to_prev = dist_to_next;
-					statmap.insert(TStatPair(statraw, adjsize));
-				}
-				catch (const std::invalid_argument& e) {
-
-					//station
-					stat_prev = stat_zw;
-					stat_zw = stat_next;
-					stat_next = line[i] + ":" + linenumber;
-					statraw = line[i] + ":" + linenumber;
-					searchstring = line[i] + ":";
-					if (i == 0)
-					{
-						ring = stat_next;
-						ringnum = adjsize;
-					}
-						
-				}
-
-				if (i % 2 == 0 && i != 0)
-				{
-					adjacency_list.emplace_back();
-					if (stat_next != "")
-						adjacency_list[adjsize].emplace_back(stat_next, dist_to_next);//N�chste Station im Bezug auf die derzeitige eintragen
-					if (stat_prev != "")
-						adjacency_list[adjsize].emplace_back(stat_prev, dist_to_prev);//Vorherige Station im Bezug auf die derzeitige eintragen
-					adjsize++;
-				}
-			}
-
-			if (ring == statraw)
-			{
-				adjacency_list[ringnum].emplace_back(stat_zw, dist_to_next);
-				//adjacency_list[adjsize-1].emplace_back(ring, dist_to_next);
-			}
-			else
-			{ 
-				adjacency_list.emplace_back();	//Letzte Station hinzuf�gen
-				adjacency_list[adjsize].emplace_back(stat_zw, dist_to_next);
+				//distance	//Versuch zum herauslesen der Distanz
+				//wenn nicht m�glich -> Stationsname
+				dist_to_next = stoi(line[i]);
+				dist_to_prev = dist_to_next;
 				statmap.insert(TStatPair(statraw, adjsize));
+			}
+			catch (const std::invalid_argument& e) {
+
+				//Stationen --> werden immer im nachhinein eingetragen nicht sofort, wenn sie eingelesen werden,
+				//da dann alle Informationen wie verbundene Stationen auf der Linie zur Verfügung stehen
+				stat_prev = stat_zw;	//Stat_prev = Station 2 vor jetzt eingelesener
+				stat_zw = stat_next;	//stat_zw = vorherige station
+				stat_next = line[i] + ":" + linenumber;	//stat_next = jetzige Station die man gerade einliest
+				statraw = line[i] + ":" + linenumber;
+				searchstring = line[i] + ":";
+
+				//Merken der ersten Station um nachher prüfen zu können, ob es sich um eine Ringlinie (Anfang=Ende) handelt
+				if (i == 0)
+				{
+					ring = stat_next;
+					ringnum = adjsize;
+				}
+						
+			}
+
+			//Da erst im nachhinein eingetragen wird, muss hier beim ersten durchlauf gewartet werden, dass Daten bereit stehen
+			//i%2==0 --> so steht immer der Name der Station als auch die Entfernugn dazu bereit
+			//Einlesen ist immer um eines früher als eintragen --> stat_next ist beim einlesen die gerade eingelesene station, wobei sie beim eintragen
+			//wirklich als die "nächste" station behandelt wird
+			if (i % 2 == 0 && i != 0)
+			{
+				adjacency_list.emplace_back();//Neue Reihe in der AdjListe einfügen
+				if (stat_next != "")
+					adjacency_list[adjsize].emplace_back(stat_next, dist_to_next);//Nächste Station im Bezug auf die derzeitige in AdjListe eintragen
+				if (stat_prev != "")
+					adjacency_list[adjsize].emplace_back(stat_prev, dist_to_prev);//Vorherige Station im Bezug auf die derzeitige eintragen
 				adjsize++;
 			}
-			
-			while (adjacency_list.size() > adjsize + 1)//�berfl�ssige (leere) Eintr�ge im Vektor l�schen
-			{
-				adjacency_list.pop_back();
-			}
+		}
+
+		//Vergleich, ob es sich bei der Linie um eine Ringlinie handelt (Start=Ende), Wenn ja kein neuer Eintrag in AdjListe,
+		//sondern Vorletzte Station in 1. Station der Linie eintragen
+		if (ring == statraw)
+		{
+			adjacency_list[ringnum].emplace_back(stat_zw, dist_to_next);
+			//adjacency_list[adjsize-1].emplace_back(ring, dist_to_next);
+		}
+		else//Letzte Station hinzufuegen in AdjListe, wenn es keine Ringlinie ist
+		{ 
+			adjacency_list.emplace_back();	
+			adjacency_list[adjsize].emplace_back(stat_zw, dist_to_next);	//In letzte Station wird nur die vorletzte eingetragen
+			statmap.insert(TStatPair(statraw, adjsize));
+			adjsize++;
+		}
+		//Ueberfluessige (leere) Eintraege in AdjListe loeschen
+		while (adjacency_list.size() > adjsize + 1)
+		{
+			adjacency_list.pop_back();
 		}
 	}
 
@@ -130,7 +129,7 @@ int main(int argc, char** argv) {
         }
 	}
 
-	//Benenstationen in Node eintragen
+	//Nebenstationen in Nodes eintragen
     for(auto it = statmap.begin(); it != statmap.end(); ++it){
 
 		string station = it->first.substr(0, it->first.find(':'));
@@ -195,6 +194,11 @@ int main(int argc, char** argv) {
 					}
 				}
 			}
+			else
+			{
+				std::cerr << "Station not found" << std::endl;
+				continue;
+			}
 			
 		}
 
@@ -232,6 +236,11 @@ int main(int argc, char** argv) {
 						}
 					}
 				}
+			}
+			else
+			{
+				std::cerr << "Station not found" << std::endl;
+				continue;
 			}
 
 			
