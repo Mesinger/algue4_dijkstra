@@ -195,7 +195,6 @@ int main(int argc, char** argv) {
 					}
 				}
 			}
-			
 		}
 
         if(!validstart){
@@ -233,8 +232,6 @@ int main(int argc, char** argv) {
 					}
 				}
 			}
-
-			
 		}
 
         if(!validend){
@@ -244,33 +241,43 @@ int main(int argc, char** argv) {
 
     }while(!validstart || !validend);
 
-	weight_t weight_vec;
-	index_t index_vec;
+    int shortestTravelTime = INT_MAX;
+    std::list<int> shortestPath;
+    for(int i = 0; i < startstations.size(); i++){
 
-	computeDijkstra(startstations[0], adjacency_list, statmap, weight_vec, index_vec);
-	std::list<int> path = DijkstraGetShortestPathTo(endstations[0], index_vec);
-	std::cout << "Path : ";
-	list<int>::const_iterator pathIt;
-	TStatMap::const_iterator mIt;
-	string sta, en;
-	for (pathIt = path.begin(); pathIt != path.end(); ++pathIt)
-	{
-		for (mIt = statmap.begin();mIt != statmap.end(); mIt++)
-		{
-			if (mIt->second == *pathIt)
-			{
-				cout << mIt->first << " ";
-				if (pathIt == path.begin())
-					sta = mIt->first;
-				en = mIt->first;
-			}
-				
-		}
-	}
-	std::cout << endl << "Distance from "<< sta<< " to " << en << " is " << weight_vec[endstations[0]] << " minutes" << std::endl;
+        weight_t weight_vec;
+        index_t index_vec;
 
-	/*std::copy(path.begin(), path.end(), std::ostream_iterator<int>(std::cout, " "));
-	std::cout << std::endl;*/
+        //dijkstra from startpoint to every station in the graph
+        computeDijkstra(startstations[i], adjacency_list, statmap, weight_vec, index_vec);
+
+        for(int j = 0; j < endstations.size(); j++){
+
+            if(weight_vec[endstations[j]] < shortestTravelTime){
+
+                shortestTravelTime = weight_vec[endstations[j]];
+                shortestPath = DijkstraGetShortestPathTo(endstations[j], index_vec);
+            }
+        }
+    }
+
+    std::cout << "Shortest traveltime: " << std::endl;
+
+    std::string startstation, endstation;
+    for(auto pathit = shortestPath.begin(); pathit != shortestPath.end(); ++pathit){
+        for(auto stationsit = statmap.begin(); stationsit != statmap.end(); ++stationsit){
+
+            if (stationsit->second == *pathit)//station id in path => print station
+            {
+                std::cout << stationsit->first << " ";
+                if (pathit == shortestPath.begin())
+                    startstation = stationsit->first;
+                endstation = stationsit->first;
+            }
+        }
+    }
+
+    std::cout << endl << "Time from "<< startstation << " to " << endstation << " is " << shortestTravelTime << " minutes" << std::endl << std::endl;
 
 	cin.ignore();
 	std::cin.get();
