@@ -45,14 +45,18 @@ int main(int argc, char** argv) {
 
 		std::vector<std::string> line = split(sbuf, '"');
 
+		int tmp=0;
 		for (int i = 0; i < line.size(); i++) {
 
+			if(i%2==1)
+				dist_to_prev = tmp;
 			try {
 
 				//distance	//Versuch zum herauslesen der Distanz
 				//wenn nicht m�glich -> Stationsname
+				
 				dist_to_next = stoi(line[i]);
-				dist_to_prev = dist_to_next;
+				tmp = dist_to_next;
 				statmap.insert(TStatPair(statraw, adjsize));
 			}
 			catch (const std::invalid_argument& e) {
