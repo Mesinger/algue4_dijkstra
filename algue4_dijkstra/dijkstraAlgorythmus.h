@@ -17,7 +17,7 @@
 typedef vector<int> weight_t;
 typedef vector<int> index_t;
 
-void computeDijkstra(int source, adjacency_list_t &adjacencyList, TStatMap &map, weight_t &weight_vec, index_t &index_vec);
+void computeDijkstra(int source, adjacency_list_t &adjacencyList, TStatMap &stations, weight_t &weight_vec, index_t &index_vec);
 
 std::list<int> DijkstraGetShortestPathTo(int index, index_t &index_vec);
 
