@@ -167,32 +167,28 @@ int main(int argc, char** argv) {
 	userInputHandler.getStartStation(startstations, adjacency_list, statmap, LineArray);
 	userInputHandler.getEndStation(endstations, adjacency_list, statmap, LineArray);
 
-	for (;;)
-	{
+	//calculating shortest trip
+	int shortestTravelTime = INT_MAX;
+	std::list<int> shortestPath;
+	for (int i = 0; i < startstations.size(); i++)
+	{//loop through all startstations
+		weight_t weight_vec;
+		index_t index_vec;
 
-		//calculating shortest trip
-		int shortestTravelTime = INT_MAX;
-		std::list<int> shortestPath;
-		for (int i = 0; i < startstations.size(); i++)
-		{//loop through all startstations
-			weight_t weight_vec;
-			index_t index_vec;
+		//dijkstra from startpoint to every station in the graph
+		computeDijkstra(startstations[i], adjacency_list, statmap, weight_vec, index_vec);
 
-			//dijkstra from startpoint to every station in the graph
-			computeDijkstra(startstations[i], adjacency_list, statmap, weight_vec, index_vec);
+		for (int j = 0; j < endstations.size(); j++) {//loop through all endstations
 
-			for (int j = 0; j < endstations.size(); j++) {//loop through all endstations
-
-				if (weight_vec[endstations[j]] < shortestTravelTime) {//find shortest trip
-					shortestTravelTime = weight_vec[endstations[j]];
-					shortestPath = DijkstraGetShortestPathTo(endstations[j], index_vec);
-				}
+			if (weight_vec[endstations[j]] < shortestTravelTime) {//find shortest trip
+				shortestTravelTime = weight_vec[endstations[j]];
+				shortestPath = DijkstraGetShortestPathTo(endstations[j], index_vec);
 			}
 		}
-
-		//output
-		printTrip(shortestPath, statmap, shortestTravelTime);
 	}
+
+	//output
+	printTrip(shortestPath, statmap, shortestTravelTime);
 	/*cin.ignore();
 	std::cin.get();*/
 
