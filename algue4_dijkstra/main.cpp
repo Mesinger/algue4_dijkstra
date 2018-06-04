@@ -161,34 +161,37 @@ int main(int argc, char** argv) {
 
 	UserInputHandler userInputHandler;
 
-	userInputHandler.getStartStation(startstations, adjacency_list, statmap, LineArray);
-	userInputHandler.getEndStation(endstations, adjacency_list, statmap, LineArray);
 
-	//calculating shortest trip
-    int shortestTravelTime = INT_MAX;
-    std::list<int> shortestPath;
-    for(int i = 0; i < startstations.size(); i++)
-	{//loop through all startstations
-        weight_t weight_vec;
-        index_t index_vec;
+	for (;;)
+	{
+		userInputHandler.getStartStation(startstations, adjacency_list, statmap, LineArray);
+		userInputHandler.getEndStation(endstations, adjacency_list, statmap, LineArray);
 
-        //dijkstra from startpoint to every station in the graph
-        computeDijkstra(startstations[i], adjacency_list, statmap, weight_vec, index_vec);
+		//calculating shortest trip
+		int shortestTravelTime = INT_MAX;
+		std::list<int> shortestPath;
+		for (int i = 0; i < startstations.size(); i++)
+		{//loop through all startstations
+			weight_t weight_vec;
+			index_t index_vec;
 
-        for(int j = 0; j < endstations.size(); j++){//loop through all endstations
+			//dijkstra from startpoint to every station in the graph
+			computeDijkstra(startstations[i], adjacency_list, statmap, weight_vec, index_vec);
 
-            if(weight_vec[endstations[j]] < shortestTravelTime){//find shortest trip
-                shortestTravelTime = weight_vec[endstations[j]];
-                shortestPath = DijkstraGetShortestPathTo(endstations[j], index_vec);
-            }
-        }
-    }
+			for (int j = 0; j < endstations.size(); j++) {//loop through all endstations
 
-    //output
-	printTrip(shortestPath, statmap, shortestTravelTime);
+				if (weight_vec[endstations[j]] < shortestTravelTime) {//find shortest trip
+					shortestTravelTime = weight_vec[endstations[j]];
+					shortestPath = DijkstraGetShortestPathTo(endstations[j], index_vec);
+				}
+			}
+		}
 
-	cin.ignore();
-	std::cin.get();
+		//output
+		printTrip(shortestPath, statmap, shortestTravelTime);
+	}
+	/*cin.ignore();
+	std::cin.get();*/
 
     return 0;
 }
