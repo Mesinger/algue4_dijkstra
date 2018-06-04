@@ -34,6 +34,8 @@ int main(int argc, char** argv) {
 		return EXIT_FAILURE;
 	}
 
+
+	//Einlesefunktion, liest Zeilenweise das angegebene Textfile aus
 	while (getline(input, sbuf)) {
 
 		dist_to_next = 0, dist_to_prev = 0;
@@ -134,27 +136,27 @@ int main(int argc, char** argv) {
         }
 	}
 
-	//Nebenstationen in Nodes eintragen
-    for(auto it = statmap.begin(); it != statmap.end(); ++it){
+	////Nebenstationen in Nodes eintragen
+ //   for(auto it = statmap.begin(); it != statmap.end(); ++it){
 
-		string station = it->first.substr(0, it->first.find(':'));
+	//	string station = it->first.substr(0, it->first.find(':'));
 
-		for(auto lineIt = LineArray.begin(); lineIt != LineArray.end(); ++lineIt){
+	//	for(auto lineIt = LineArray.begin(); lineIt != LineArray.end(); ++lineIt){
 
-			string str = station + ":" + *lineIt;
-			auto there = statmap.find(str);
+	//		string str = station + ":" + *lineIt;
+	//		auto there = statmap.find(str);
 
-			if (there != statmap.end() && there != it) {
+	//		if (there != statmap.end() && there != it) {
 
-				for (int i = 0; i < adjacency_list.size(); i++)
-					for (int j = 0; j < adjacency_list[i].size(); j++) {
+	//			for (int i = 0; i < adjacency_list.size(); i++)
+	//				for (int j = 0; j < adjacency_list[i].size(); j++) {
 
-						if (adjacency_list[i][j].stationname == it->first)
-							adjacency_list[i][j].appendNeben(str);
-					}
-			}
-		}
-	}
+	//					if (adjacency_list[i][j].stationname == it->first)
+	//						adjacency_list[i][j].appendNeben(str);
+	//				}
+	//		}
+	//	}
+	//}
 
 	//user input
 	std::vector<int>startstations, endstations;
@@ -162,10 +164,11 @@ int main(int argc, char** argv) {
 	UserInputHandler userInputHandler;
 
 
+	userInputHandler.getStartStation(startstations, adjacency_list, statmap, LineArray);
+	userInputHandler.getEndStation(endstations, adjacency_list, statmap, LineArray);
+
 	for (;;)
 	{
-		userInputHandler.getStartStation(startstations, adjacency_list, statmap, LineArray);
-		userInputHandler.getEndStation(endstations, adjacency_list, statmap, LineArray);
 
 		//calculating shortest trip
 		int shortestTravelTime = INT_MAX;

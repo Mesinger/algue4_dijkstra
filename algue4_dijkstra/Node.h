@@ -17,8 +17,8 @@ public:
     const int distance;
 
 	const string getName();
-    bool isLonely();
-    vector<string>& getNeben();
-	void appendNeben(string str);
+    /*bool isLonely();
+    vector<string>& getNeben();*/
+	/*void appendNeben(string str);*/
     void displayInfo();
 };
