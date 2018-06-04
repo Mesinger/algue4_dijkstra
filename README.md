@@ -1,3 +1,11 @@
+#Installation
+To run the programm you have to call it via commandline as following:
+- Go into the directory "algue4_dijkstra/x64/Release" and open the command line window
+- type: algue4_dijkstra.exe <Name of File with trainlines>
+
+Then you should be able to enter your wished start and end destination
+
+
 #Nodes
 
 ##What are our Nodes?
