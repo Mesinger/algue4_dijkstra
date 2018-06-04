@@ -6,9 +6,6 @@
 using namespace std;
 
 class Node {
-private:
-
-    vector <string> neighborstations;
 public:
     Node(string& stationname, int dist);
     ~Node();
@@ -17,8 +14,5 @@ public:
     const int distance;
 
 	const string getName();
-    /*bool isLonely();
-    vector<string>& getNeben();*/
-	/*void appendNeben(string str);*/
     void displayInfo();
 };

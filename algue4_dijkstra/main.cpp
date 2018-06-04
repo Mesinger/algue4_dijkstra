@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
 	adjacency_list_t adjacency_list;
 	TStatMap statmap;//pair<statname,number adj.list>
 	vector<string> LineArray;
-	string stat_next, stat_prev, stat_zw, statraw, searchstring, linenumber, ring, sbuf;
+	string stat_next, stat_prev, stat_zw, statraw, linenumber, ring, sbuf;
 	int ringnum, adjsize = 0, dist_to_next, dist_to_prev;
 
 	/*command line arguments*/
@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
 	while (getline(input, sbuf)) {
 
 		dist_to_next = 0, dist_to_prev = 0;
-		stat_next="", stat_prev="", stat_zw="", statraw="", searchstring="";
+		stat_next="", stat_prev="", stat_zw="", statraw="";
 
 		linenumber = sbuf.substr(0, sbuf.find(':'));//herausschneiden der Liniennummer aus dem File
 		LineArray.emplace_back(linenumber);
@@ -69,7 +69,6 @@ int main(int argc, char** argv) {
 				stat_zw = stat_next;	//stat_zw = vorherige station
 				stat_next = line[i] + ":" + linenumber;	//stat_next = jetzige Station die man gerade einliest
 				statraw = line[i] + ":" + linenumber;
-				searchstring = line[i] + ":";
 
 				//Merken der ersten Station um nachher prüfen zu können, ob es sich um eine Ringlinie (Anfang=Ende) handelt
 				if (i == 0)
@@ -109,7 +108,7 @@ int main(int argc, char** argv) {
 			statmap.insert(TStatPair(statraw, adjsize));
 			adjsize++;
 		}
-		//Ueberfluessige (leere) Eintraege in AdjListe loeschen
+		//Falls ueberfluessige (leere) Eintraege in AdjListe -> loeschen
 		while (adjacency_list.size() > adjsize + 1)
 		{
 			adjacency_list.pop_back();
@@ -135,28 +134,6 @@ int main(int argc, char** argv) {
             }
         }
 	}
-
-	////Nebenstationen in Nodes eintragen
- //   for(auto it = statmap.begin(); it != statmap.end(); ++it){
-
-	//	string station = it->first.substr(0, it->first.find(':'));
-
-	//	for(auto lineIt = LineArray.begin(); lineIt != LineArray.end(); ++lineIt){
-
-	//		string str = station + ":" + *lineIt;
-	//		auto there = statmap.find(str);
-
-	//		if (there != statmap.end() && there != it) {
-
-	//			for (int i = 0; i < adjacency_list.size(); i++)
-	//				for (int j = 0; j < adjacency_list[i].size(); j++) {
-
-	//					if (adjacency_list[i][j].stationname == it->first)
-	//						adjacency_list[i][j].appendNeben(str);
-	//				}
-	//		}
-	//	}
-	//}
 
 	//user input
 	std::vector<int>startstations, endstations;
