@@ -1,11 +1,3 @@
-#Installation
-To run the programm you have to call it via commandline as following:
-- Go into the directory "algue4_dijkstra/x64/Release" and open the command line window
-- type: algue4_dijkstra.exe <Name of File with trainlines>
-
-Then you should be able to enter your wished start and end destination
-
-
 #Nodes
 
 ##What are our Nodes?
@@ -190,3 +182,123 @@ O(N*M*C)
 ```
 --> N - Number of Stations, M - number of lines, C - log(N) (binary tree search in map) 
 --> O(N*M)
+
+# Tests
+We used a quick shell script to test our programm. We tested, trips on a single subwayline, trips with changes, trips from - to the same station, and loops in subwaylines.
+```
+printf "\nTestscript for Dijkstra\n\n"
+
+echo ----------------------------------------------------------------------------
+
+#first test: simple trip without changing lines in both directions
+printf "Test #1: Karlsplatz to Schwedenplatz\n"
+printf "Expected Output: U1: 'Karlsplatz' 2 'Stephansplatz' 1 'Schwedenplatz' = 3min\n\n"
+./dijkstra ../data/ubahn_sm.txt <<< "Karlsplatz Schwedenplatz"
+
+echo ----------------------------------------------------------------------------
+
+printf "Test #2: Schwedenplatz to Karlsplatz\n"
+printf "Expected Output: U1: 'Schwedenplatz' 1 'Stephansplatz' 2 'Karlsplatz' = 3min\n\n"
+./dijkstra ../data/ubahn_sm.txt <<< "Schwedenplatz Karlsplatz"
+
+echo ----------------------------------------------------------------------------
+
+#second test: one change, short trip both directions
+printf "Test #3: Keplerplatz to Pilgramgasse\n"
+printf "Expected Output: U4: 'Karlsplatz' 2 'Kettenbrueckengasse' 1 'Pilgramgasse' <<< U1: 'Karlsplatz' 2 'Taubstummengasse' 1 'Suedtirolerplatz' 2 'Keplerplatz' = 13min\n\n"
+./dijkstra ../data/ubahn_sm.txt <<< "Keplerplatz Pilgramgasse"
+
+echo ----------------------------------------------------------------------------
+
+printf "Test #4: Pilgramgasse to Keplerplatz\n"
+printf "Expected Output: U4: 'Karlsplatz' 2 'Kettenbrueckengasse' 1 'Pilgramgasse' >>> U1: 'Karlsplatz' 2 'Taubstummengasse' 1 'Suedtirolerplatz' 2 'Keplerplatz' = 13min\n\n"
+./dijkstra ../data/ubahn_sm.txt <<< "Pilgramgasse Keplerplatz"
+
+echo ----------------------------------------------------------------------------
+
+#third test: same station
+printf "Test #5: Westbahnhof to Westbahnhof\n"
+printf "Expected Output: 0min\n\n"
+./dijkstra ../data/ubahn_sm.txt <<< "Westbahnhof Westbahnhof"
+
+echo ----------------------------------------------------------------------------
+
+#fourth test: ring line
+printf "Test #6: Floridsdorf to Siebenhirten\n"
+printf "Expected Output: complete U6: 36min\n\n"
+./dijkstra ../data/ubahn_sm.txt <<< "Floridsdorf Siebenhirten"
+
+echo ----------------------------------------------------------------------------
+
+printf "Test #6: Floridsdorf to Siebenhirten (loop, 10 min connection) \n"
+printf "Expected Output: U6: 'Siebenhirten' 10 'Floridsdorf' = 10min\n\n"
+./dijkstra ../data/ubahn_sm_u6loop.txt <<< "Floridsdorf Siebenhirten
+
+```
+Output:
+```
+Testscript for Dijkstra
+
+----------------------------------------------------------------------------
+Test #1: Karlsplatz to Schwedenplatz
+Expected Output: U1: 'Karlsplatz' 2 'Stephansplatz' 1 'Schwedenplatz' = 3min
+
+Start station: End station: 
+Shortest trip: 
+Karlsplatz:U1 Stephansplatz:U1 Schwedenplatz:U1 
+Time from Karlsplatz:U1 to Schwedenplatz:U1 is 3 minutes
+
+----------------------------------------------------------------------------
+Test #2: Schwedenplatz to Karlsplatz
+Expected Output: U1: 'Schwedenplatz' 1 'Stephansplatz' 2 'Karlsplatz' = 3min
+
+Start station: End station: 
+Shortest trip: 
+Schwedenplatz:U1 Stephansplatz:U1 Karlsplatz:U1 
+Time from Schwedenplatz:U1 to Karlsplatz:U1 is 3 minutes
+
+----------------------------------------------------------------------------
+Test #3: Keplerplatz to Pilgramgasse
+Expected Output: U4: 'Karlsplatz' 2 'Kettenbrueckengasse' 1 'Pilgramgasse' <<< U1: 'Karlsplatz' 2 'Taubstummengasse' 1 'Suedtirolerplatz' 2 'Keplerplatz' = 13min
+
+Start station: End station: 
+Shortest trip: 
+Keplerplatz:U1 Suedtirolerplatz:U1 Taubstummengasse:U1 Karlsplatz:U1 Karlsplatz:U4 Kettenbrueckengasse:U4 Pilgramgasse:U4 
+Time from Keplerplatz:U1 to Pilgramgasse:U4 is 13 minutes
+
+----------------------------------------------------------------------------
+Test #4: Pilgramgasse to Keplerplatz
+Expected Output: U4: 'Karlsplatz' 2 'Kettenbrueckengasse' 1 'Pilgramgasse' >>> U1: 'Karlsplatz' 2 'Taubstummengasse' 1 'Suedtirolerplatz' 2 'Keplerplatz' = 13min
+
+Start station: End station: 
+Shortest trip: 
+Pilgramgasse:U4 Kettenbrueckengasse:U4 Karlsplatz:U4 Karlsplatz:U1 Taubstummengasse:U1 Suedtirolerplatz:U1 Keplerplatz:U1 
+Time from Pilgramgasse:U4 to Keplerplatz:U1 is 13 minutes
+
+----------------------------------------------------------------------------
+Test #5: Westbahnhof to Westbahnhof
+Expected Output: 0min
+
+Start station: End station: 
+Shortest trip: 
+Westbahnhof:U3 
+Time from Westbahnhof:U3 to Westbahnhof:U3 is 0 minutes
+
+----------------------------------------------------------------------------
+Test #6: Floridsdorf to Siebenhirten
+Expected Output: complete U6: 36min
+
+Start station: End station: 
+Shortest trip: 
+Floridsdorf:U6 Neue Donau:U6 Handelskai:U6 Dresdner Strasse:U6 Jaegerstrasse:U6 Spittelau:U6 Nussdorfer Strasse:U6 Waehringer Strasse-Volksoper:U6 Michelbeuern-AKH:U6 Alser Strasse:U6 Josefstaedter Strasse:U6 Thaliastrasse:U6 Burggasse-Stadthalle:U6 Westbahnhof:U6 Gumpendorfer Strasse:U6 Laengenfeldgasse:U6 Niederhofstrasse:U6 Philadelphiabruecke:U6 Tscherttegasse:U6 Am Schoepfwerk:U6 Alterlaa:U6 Erlaaer Strasse:U6 Perfektastrasse:U6 Siebenhirten:U6 
+Time from Floridsdorf:U6 to Siebenhirten:U6 is 36 minutes
+
+----------------------------------------------------------------------------
+Test #6: Floridsdorf to Siebenhirten (loop, 10 min connection) 
+Expected Output: U6: 'Siebenhirten' 10 'Floridsdorf' = 10min
+
+Start station: End station: 
+Shortest trip: 
+Floridsdorf:U6 Siebenhirten:U6 
+Time from Floridsdorf:U6 to Siebenhirten:U6 is 10 minutes
+```
